@@ -18,11 +18,11 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
     <title>
         
-        判断链表是否相交｜Ruby&#39;s blog
+        堆栈方法区分别存储着什么？｜Ruby&#39;s blog
         
     </title>
 
-    <link rel="canonical" href="https://Ru6ywang.github.io/2021/11/01/判断链表是否相交/">
+    <link rel="canonical" href="https://Ru6ywang.github.io/2021/11/04/堆栈方法区分别存储着什么？/">
 
     <!-- Bootstrap Core CSS -->
     
@@ -159,12 +159,12 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
                 <div class="post-heading">
-                    <h1>判断链表是否相交</h1>
+                    <h1>堆栈方法区分别存储着什么？</h1>
                     
                     <span class="meta">
                          作者 Ruby Wang
                         <span>
-                          日期 2021-11-01
+                          日期 2021-11-04
                          </span>
                     </span>
                     <div class="tags text-center">
@@ -172,8 +172,11 @@
                         <a class="tag" href="/tags/#Java"
                            title="Java">Java</a>
                         
-                        <a class="tag" href="/tags/#Reading Note - Arithmetic"
-                           title="Reading Note - Arithmetic">Reading Note - Arithmetic</a>
+                        <a class="tag" href="/tags/#Reading Note"
+                           title="Reading Note">Reading Note</a>
+                        
+                        <a class="tag" href="/tags/#Theory"
+                           title="Theory">Theory</a>
                         
                     </div>
                 </div>
@@ -182,7 +185,7 @@
     </div>
     <div class="post-title-haojen">
         <span>
-            判断链表是否相交
+            堆栈方法区分别存储着什么？
         </span>
     </div>
 </header>
@@ -193,26 +196,33 @@
         <div class="row">
             <!-- Post Container -->
             <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
-                <h3 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h3><pre><code>if 判断 headA headB 是否为空 
-将 b 的头尾相连成环，若headA与headB相交，则 headA此时也有环
-进而判断A是否有环，若有环则环入口为相交点
-将slow指向头部，进行遍历，fast与slow再次相等时为交点
-</code></pre>
-<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Definition for singly-linked list.</span></span><br><span class="line"><span class="comment"> * public class ListNode &#123;</span></span><br><span class="line"><span class="comment"> *     int val;</span></span><br><span class="line"><span class="comment"> *     ListNode next;</span></span><br><span class="line"><span class="comment"> *     ListNode(int x) &#123;</span></span><br><span class="line"><span class="comment"> *         val = x;</span></span><br><span class="line"><span class="comment"> *         next = null;</span></span><br><span class="line"><span class="comment"> *     &#125;</span></span><br><span class="line"><span class="comment"> * &#125;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> ListNode <span class="title">getIntersectionNode</span><span class="params">(ListNode headA, ListNode headB)</span> </span>&#123;</span><br><span class="line">         <span class="keyword">if</span> (headA == <span class="keyword">null</span> || headB == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        ListNode b = headB;</span><br><span class="line">        <span class="keyword">while</span>(b.next!= <span class="keyword">null</span>)&#123;</span><br><span class="line">            b = b.next;</span><br><span class="line">        &#125;</span><br><span class="line">        b.next= headB;</span><br><span class="line"></span><br><span class="line">        ListNode slow = headA;</span><br><span class="line">        ListNode fast = headA;</span><br><span class="line">        <span class="keyword">while</span> (fast != <span class="keyword">null</span> &amp;&amp; fast.next != <span class="keyword">null</span>) &#123;</span><br><span class="line">            slow = slow.next;</span><br><span class="line">            fast = fast.next.next;</span><br><span class="line">        <span class="keyword">if</span>(slow == fast)&#123;</span><br><span class="line">            slow=headA;</span><br><span class="line">            <span class="keyword">while</span>(slow != fast)&#123;</span><br><span class="line">                slow = slow.next;</span><br><span class="line">                fast = fast.next;</span><br><span class="line">            &#125;</span><br><span class="line">            b.next =<span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">return</span> fast;</span><br><span class="line">        &#125;</span><br><span class="line">     &#125;</span><br><span class="line">     b.next=<span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+                <h2 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h2><ol>
+<li>每个线程包含一个栈区,栈中只保存基础数据类型的对象和自定义对象的引用(不是对象)。对象都存放在堆区中。</li>
+<li>每个战中的数据(基础数据类型和对象引用)都是私有的，其他栈不能访问。</li>
+<li>栈分为3个部分：基本类型变量，执行环境上下文，操作指令区(存放操作指令).</li>
+<li>在函数中定义的一些基本类型的变量数据和对象的引用变量都在函数的栈内存中分配。</li>
+<li>当在一段代码块定义一个变量时，Java就在栈中为这个变量分配内存空间，当该变量退出该作用域后，Java会自动释放掉为该变量所分配的内存空间，该内存空间可以立即被另作他用。</li>
+</ol>
+<h2 id="堆内存-Heap-Memory"><a href="#堆内存-Heap-Memory" class="headerlink" title="堆内存 (Heap Memory)"></a>堆内存 (Heap Memory)</h2><p>堆数据区是用来存放对象和数组（特殊的对象）。堆内存由多个线程共享。堆内存随着JVM启动而创建。众所周知，Java中有一个很好的特性就是自动垃圾回收。垃圾回收就操作这个数据区来回收对象进而释放内存。如果堆内存剩余的内存不足以满足于对象创建，JVM会抛出OutOfMemoryError错误。</p>
+<h3 id="堆总结"><a href="#堆总结" class="headerlink" title="堆总结"></a>堆总结</h3><ol>
+<li>堆中存储的全部是对象，每个对象包含一个与之对应的class信息–class的目的是得到操作指令。</li>
+<li>jvm只有一个堆区（heap）被所有线程共享，堆区中不存放基本类型和对象引用，只存放对象本身。</li>
+<li>堆的优势是可以动态地分配内存大小，生存期也不必事先告诉编译器，因为它是在运行时动态分配内存的，Java的垃圾收集器会自动收走这些不再使用的数据。</li>
+<li>缺点是，由于要在运行时动态分配内存，存取速度较慢。</li>
+</ol>
+<h3 id="对于成员变量和局部变量："><a href="#对于成员变量和局部变量：" class="headerlink" title="对于成员变量和局部变量："></a>对于成员变量和局部变量：</h3><p>成员变量就是方法外部，类的内部定义的变量；<br>局部变量就是方法或语句块内部定义的变量。局部变量必须初始化。 形式参数是局部变量。<br>局部变量的数据存在于栈内存中。栈内存中的局部变量随着方法的消失而消失。<br>成员变量存储在堆中的对象里面，由垃圾回收器负责回收。 如以下代码：</p>
+<h2 id="方法区-Method-Area"><a href="#方法区-Method-Area" class="headerlink" title="方法区 (Method Area)"></a>方法区 (Method Area)</h2><p>方法区在JVM中也是一个非常重要的区域，它与堆一样，是被线程共享的区域。在方法区中，存储了每个类的信息（包括类的名称、方法信息、字段信息）、静态变量、常量以及编译器编译后的代码等。</p>
+<p>在Class文件中除了类的字段、方法、接口等描述信息外，还有一项信息是<em>常量池</em>，用来存储编译期间生成的字面量和符号引用。</p>
+<h3 id="在方法区中有一个非常重要的部分就是运行时常量池，它是每一个类或接口的常量池的运行时表示形式，在类和接口被加载到JVM后，对应的运行时常量池就被创建出来。当然并非Class文件常量池中的内容才能进入运行时常量池，在运行期间也可将新的常量放入运行时常量池中，比如String的intern方法。"><a href="#在方法区中有一个非常重要的部分就是运行时常量池，它是每一个类或接口的常量池的运行时表示形式，在类和接口被加载到JVM后，对应的运行时常量池就被创建出来。当然并非Class文件常量池中的内容才能进入运行时常量池，在运行期间也可将新的常量放入运行时常量池中，比如String的intern方法。" class="headerlink" title="在方法区中有一个非常重要的部分就是运行时常量池，它是每一个类或接口的常量池的运行时表示形式，在类和接口被加载到JVM后，对应的运行时常量池就被创建出来。当然并非Class文件常量池中的内容才能进入运行时常量池，在运行期间也可将新的常量放入运行时常量池中，比如String的intern方法。"></a>在方法区中有一个非常重要的部分就是运行时常量池，它是每一个类或接口的常量池的运行时表示形式，在类和接口被加载到JVM后，对应的运行时常量池就被创建出来。当然并非Class文件常量池中的内容才能进入运行时常量池，在运行期间也可将新的常量放入运行时常量池中，比如String的intern方法。</h3>
                 <hr>
                 
 
                 <ul class="pager">
                     
-                    <li class="previous">
-                        <a href="/2021/11/04/堆栈方法区分别存储着什么？/" data-toggle="tooltip" data-placement="top"
-                           title="堆栈方法区分别存储着什么？">&larr; Previous Post</a>
-                    </li>
-                    
                     
                     <li class="next">
-                        <a href="/2021/11/01/Circular-Linked-List/" data-toggle="tooltip" data-placement="top"
-                           title="Circular Linked List">Next Post &rarr;</a>
+                        <a href="/2021/11/01/判断链表是否相交/" data-toggle="tooltip" data-placement="top"
+                           title="判断链表是否相交">Next Post &rarr;</a>
                     </li>
                     
                 </ul>
@@ -231,7 +241,7 @@
 
             <div class="hidden-xs col-sm-3 toc-col">
                 <div class="toc-wrap">
-                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF"><span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81"><span class="toc-text">代码</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%88"><span class="toc-text">栈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A0%86%E5%86%85%E5%AD%98-Heap-Memory"><span class="toc-text">堆内存 (Heap Memory)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A0%86%E6%80%BB%E7%BB%93"><span class="toc-text">堆总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E4%BA%8E%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F%E5%92%8C%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%EF%BC%9A"><span class="toc-text">对于成员变量和局部变量：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E5%8C%BA-Method-Area"><span class="toc-text">方法区 (Method Area)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8%E6%96%B9%E6%B3%95%E5%8C%BA%E4%B8%AD%E6%9C%89%E4%B8%80%E4%B8%AA%E9%9D%9E%E5%B8%B8%E9%87%8D%E8%A6%81%E7%9A%84%E9%83%A8%E5%88%86%E5%B0%B1%E6%98%AF%E8%BF%90%E8%A1%8C%E6%97%B6%E5%B8%B8%E9%87%8F%E6%B1%A0%EF%BC%8C%E5%AE%83%E6%98%AF%E6%AF%8F%E4%B8%80%E4%B8%AA%E7%B1%BB%E6%88%96%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%B8%B8%E9%87%8F%E6%B1%A0%E7%9A%84%E8%BF%90%E8%A1%8C%E6%97%B6%E8%A1%A8%E7%A4%BA%E5%BD%A2%E5%BC%8F%EF%BC%8C%E5%9C%A8%E7%B1%BB%E5%92%8C%E6%8E%A5%E5%8F%A3%E8%A2%AB%E5%8A%A0%E8%BD%BD%E5%88%B0JVM%E5%90%8E%EF%BC%8C%E5%AF%B9%E5%BA%94%E7%9A%84%E8%BF%90%E8%A1%8C%E6%97%B6%E5%B8%B8%E9%87%8F%E6%B1%A0%E5%B0%B1%E8%A2%AB%E5%88%9B%E5%BB%BA%E5%87%BA%E6%9D%A5%E3%80%82%E5%BD%93%E7%84%B6%E5%B9%B6%E9%9D%9EClass%E6%96%87%E4%BB%B6%E5%B8%B8%E9%87%8F%E6%B1%A0%E4%B8%AD%E7%9A%84%E5%86%85%E5%AE%B9%E6%89%8D%E8%83%BD%E8%BF%9B%E5%85%A5%E8%BF%90%E8%A1%8C%E6%97%B6%E5%B8%B8%E9%87%8F%E6%B1%A0%EF%BC%8C%E5%9C%A8%E8%BF%90%E8%A1%8C%E6%9C%9F%E9%97%B4%E4%B9%9F%E5%8F%AF%E5%B0%86%E6%96%B0%E7%9A%84%E5%B8%B8%E9%87%8F%E6%94%BE%E5%85%A5%E8%BF%90%E8%A1%8C%E6%97%B6%E5%B8%B8%E9%87%8F%E6%B1%A0%E4%B8%AD%EF%BC%8C%E6%AF%94%E5%A6%82String%E7%9A%84intern%E6%96%B9%E6%B3%95%E3%80%82"><span class="toc-text">在方法区中有一个非常重要的部分就是运行时常量池，它是每一个类或接口的常量池的运行时表示形式，在类和接口被加载到JVM后，对应的运行时常量池就被创建出来。当然并非Class文件常量池中的内容才能进入运行时常量池，在运行期间也可将新的常量放入运行时常量池中，比如String的intern方法。</span></a></li></ol></li></ol>
                 </div>
             </div>
         </div>
