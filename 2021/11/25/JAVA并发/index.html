@@ -86,7 +86,7 @@
                         
 							
                         <li>
-                            <a href="/about/">ABOUT</a>
+                            <a href="/tags/">TAGS</a>
                         </li>
 							
 						
@@ -94,7 +94,7 @@
                         
 							
                         <li>
-                            <a href="/tags/">TAGS</a>
+                            <a href="/about/">ABOUT</a>
                         </li>
 							
 						
@@ -196,29 +196,100 @@
         <div class="row">
             <!-- Post Container -->
             <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
-                <p>###<strong>进程与线程</strong></p>
-<p>###<strong>进程</strong></p>
-<p>程序由指令和数据组成，但这些指令要运行，数据要读写，就必须将指令加载至 CPU，数据加载至内存。在指令运行过程中还需要用到磁盘、网络等设备。进程就是用来加载指令、管理内存、管理 IO 的当一个程序被运行，从磁盘加载这个程序的代码至内存，这时就开启了一个进程。</p>
+                <h3 id="进程与线程"><a href="#进程与线程" class="headerlink" title="进程与线程"></a>进程与线程</h3><h3 id="进程"><a href="#进程" class="headerlink" title="进程"></a>进程</h3><p>程序由指令和数据组成，但这些指令要运行，数据要读写，就必须将指令加载至 CPU，数据加载至内存。在指令运行过程中还需要用到磁盘、网络等设备。进程就是用来加载指令、管理内存、管理 IO 的当一个程序被运行，从磁盘加载这个程序的代码至内存，这时就开启了一个进程。</p>
 <p>进程就可以视为程序的一个实例。大部分程序可以同时运行多个实例进程（例如记事本、画图、浏览器等），也有的程序只能启动一个实例进程（例如网易云音乐、360 安全卫士等）</p>
-<p>###<strong>线程</strong></p>
-<p>一个进程之内可以分为一到多个线程。</p>
+<h3 id="线程"><a href="#线程" class="headerlink" title="线程"></a>线程</h3><p>一个进程之内可以分为一到多个线程。</p>
 <p>一个线程就是一个指令流，将指令流中的一条条指令以一定的顺序交给 CPU 执行</p>
 <p>Java 中，线程作为最小调度单位，进程作为资源分配的最小单位。 在 windows 中进程是不活动的，只是作为线程的容器</p>
-<p>###<strong>二者对比</strong></p>
-<p>进程基本上相互独立的，而线程存在于进程内，是进程的一个子集</p>
-<p>进程拥有共享的资源，如内存空间等，供其内部的线程共享</p>
-<p>进程间通信较为复杂</p>
+<h3 id="二者对比"><a href="#二者对比" class="headerlink" title="二者对比"></a>二者对比</h3><ul>
+<li><p>进程基本上相互独立的，而线程存在于进程内，是进程的一个子集</p>
+</li>
+<li><p>进程拥有共享的资源，如内存空间等，供其内部的线程共享</p>
+</li>
+<li><p>进程间通信较为复杂</p>
+</li>
+</ul>
 <p>​    同一台计算机的进程通信称为 IPC（Inter-process communication）</p>
 <p>​    不同计算机之间的进程通信，需要通过网络，并遵守共同的协议，例如 HTTP</p>
 <p>线程通信相对简单，因为它们共享进程内的内存，一个例子是多个线程可以访问同一个共享变量</p>
 <p>线程更轻量，线程上下文切换成本一般上要比进程上下文切换低</p>
-<p>###<strong>引用 Rob Pike 的一段描述：</strong></p>
-<p>并发（concurrent）是同一时间应对（dealing with）多件事情的能力</p>
+<h3 id="引用-Rob-Pike-的一段描述："><a href="#引用-Rob-Pike-的一段描述：" class="headerlink" title="引用 Rob Pike 的一段描述："></a>引用 Rob Pike 的一段描述：</h3><p>并发（concurrent）是同一时间应对（dealing with）多件事情的能力</p>
 <p>并行（parallel）是同一时间动手做（doing）多件事情的能力</p>
 <p>例子</p>
-<p>家庭主妇做饭、打扫卫生、给孩子喂奶，她一个人轮流交替做这多件事，这时就是并发</p>
-<p>家庭主妇雇了个保姆，她们一起这些事，这时既有并发，也有并行（这时会产生竞争，例如锅只有一口，一个人用锅时，另一个人就得等待）</p>
-<p>雇了3个保姆，一个专做饭、一个专打扫卫生、一个专喂奶，互不干扰，这时是并行</p>
+<ul>
+<li><p>家庭主妇做饭、打扫卫生、给孩子喂奶，她一个人轮流交替做这多件事，这时就是并发</p>
+</li>
+<li><p>家庭主妇雇了个保姆，她们一起这些事，这时既有并发，也有并行（这时会产生竞争，例如锅只有一口，一个人用锅时，另一个人就得等待）</p>
+</li>
+<li><p>雇了3个保姆，一个专做饭、一个专打扫卫生、一个专喂奶，互不干扰，这时是并行</p>
+</li>
+</ul>
+<h3 id="创建和运行线程"><a href="#创建和运行线程" class="headerlink" title="创建和运行线程"></a>创建和运行线程</h3><p>方法一，直接使用 Thread</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建线程对象</span></span><br><span class="line">Thread t = <span class="keyword">new</span> Thread() &#123;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="comment">// 要执行的任务</span></span><br><span class="line"> &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 启动线程</span></span><br><span class="line">t.start();</span><br></pre></td></tr></table></figure>
+
+<p>方法二，使用 Runnable 配合 Thread<br>把【线程】和【任务】（要执行的代码）分开</p>
+<ul>
+<li>Thread 代表线程</li>
+<li>Runnable 可运行的任务（线程要执行的代码）</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Runnable runnable = <span class="keyword">new</span> Runnable() &#123;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>&#123;</span><br><span class="line"><span class="comment">// 要执行的任务</span></span><br><span class="line"> &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 创建线程对象</span></span><br><span class="line">Thread t = <span class="keyword">new</span> Thread( runnable );</span><br><span class="line"><span class="comment">// 启动线程</span></span><br><span class="line">t.start();</span><br></pre></td></tr></table></figure>
+
+
+<p>Java 8 以后可以使用 lambda 精简代码<br>-&gt;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Runnable r =()-&gt;&#123;</span><br><span class="line">	<span class="comment">//方法</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建任务对象</span></span><br><span class="line">Runnable task2 = () -&gt; log.debug(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line"><span class="comment">// 参数1 是任务对象; 参数2 是线程名字，推荐</span></span><br><span class="line">Thread t2 = <span class="keyword">new</span> Thread(task2, <span class="string">&quot;t2&quot;</span>);</span><br><span class="line">t2.start();</span><br></pre></td></tr></table></figure>
+
+<h3 id="原理之-Thread-与-Runnable-的关系"><a href="#原理之-Thread-与-Runnable-的关系" class="headerlink" title="原理之 Thread 与 Runnable 的关系"></a>原理之 Thread 与 Runnable 的关系</h3><p>分析 Thread 的源码，理清它与 Runnable 的关系<br>小结</p>
+<ul>
+<li>方法1 是把线程和任务合并在了一起，方法2 是把线程和任务分开了</li>
+<li>用 Runnable 更容易与线程池等高级 API 配合</li>
+<li>用 Runnable 让任务类脱离了 Thread 继承体系，更灵活</li>
+</ul>
+<p>方法三，FutureTask 配合 Thread<br>FutureTask 能够接收 Callable 类型的参数，用来处理有返回结果的情况<br>支持泛型</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建任务对象</span></span><br><span class="line">FutureTask&lt;Integer&gt; task3 = <span class="keyword">new</span> FutureTask&lt;&gt;(() -&gt; &#123;</span><br><span class="line">log.debug(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line"><span class="keyword">return</span> <span class="number">100</span>;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">// 参数1 是任务对象; 参数2 是线程名字，推荐</span></span><br><span class="line"><span class="keyword">new</span> Thread(task3, <span class="string">&quot;t3&quot;</span>).start();</span><br><span class="line"><span class="comment">// 主线程阻塞，同步等待 task 执行完毕的结果</span></span><br><span class="line">Integer result = task3.get();</span><br><span class="line">log.debug(<span class="string">&quot;结果是:&#123;&#125;&quot;</span>, result);</span><br></pre></td></tr></table></figure>
+
+<h3 id="原理之线程运行"><a href="#原理之线程运行" class="headerlink" title="原理之线程运行"></a>原理之线程运行</h3><h4 id="栈与栈帧"><a href="#栈与栈帧" class="headerlink" title="栈与栈帧"></a>栈与栈帧</h4><p>Java Virtual Machine Stacks （Java 虚拟机栈）<br>我们都知道 JVM 中由堆、栈、方法区所组成，其中栈内存是给谁用的呢？其实就是线程，每个线程启动后，虚拟机就会为其分配一块栈内存。</p>
+<ul>
+<li>每个栈由多个栈帧（Frame）组成，对应着每次方法调用时所占用的内存</li>
+<li>每个线程只能有一个活动栈帧，对应着当前正在执行的那个方法<h4 id="线程上下文切换（Thread-Context-Switch）"><a href="#线程上下文切换（Thread-Context-Switch）" class="headerlink" title="线程上下文切换（Thread Context Switch）"></a>线程上下文切换（Thread Context Switch）</h4>因为以下一些原因导致 cpu 不再执行当前的线程，转而执行另一个线程的代码</li>
+<li>线程的 cpu 时间片用完</li>
+<li>垃圾回收</li>
+<li>有更高优先级的线程需要运行</li>
+<li>线程自己调用了 sleep、yield、wait、join、park、synchronized、lock 等方法</li>
+<li>当 Context Switch 发生时，需要由操作系统保存当前线程的状态，并恢复另一个线程的状态，Java 中对应的概念<br>就是程序计数器（Program Counter Register），它的作用是记住下一条 jvm 指令的执行地址，是线程私有的</li>
+<li>状态包括程序计数器、虚拟机栈中每个栈帧的信息，如局部变量、操作数栈、返回地址等</li>
+<li>Context Switch 频繁发生会影响性能</li>
+</ul>
+<h3 id="sleep-与-yield"><a href="#sleep-与-yield" class="headerlink" title="sleep 与 yield"></a>sleep 与 yield</h3><h4 id="sleep"><a href="#sleep" class="headerlink" title="sleep"></a>sleep</h4><ol>
+<li>调用 sleep 会让当前线程从 Running 进入 Timed Waiting 状态（阻塞）</li>
+<li>其它线程可以使用 interrupt 方法打断正在睡眠的线程，这时 sleep 方法会抛出 InterruptedException</li>
+<li>睡眠结束后的线程未必会立刻得到执行</li>
+<li>建议用 TimeUnit 的 sleep 代替 Thread 的 sleep 来获得更好的可读性<h4 id="yield"><a href="#yield" class="headerlink" title="yield"></a>yield</h4></li>
+<li>调用 yield 会让当前线程从 Running 进入 Runnable 就绪状态，然后调度执行其它线程</li>
+<li>具体的实现依赖于操作系统的任务调度器</li>
+</ol>
+<h3 id="线程优先级"><a href="#线程优先级" class="headerlink" title="线程优先级"></a>线程优先级</h3><ul>
+<li>线程优先级会提示（hint）调度器优先调度该线程，但它仅仅是一个提示，调度器可以忽略它</li>
+<li>如果 cpu 比较忙，那么优先级高的线程会获得更多的时间片，但 cpu 闲时，优先级几乎没作用</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">Runnable task1 = () -&gt; &#123;</span><br><span class="line"><span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (;;) &#123;</span><br><span class="line">System.out.println(<span class="string">&quot;----&gt;1 &quot;</span> + count++);</span><br><span class="line"> &#125;</span><br><span class="line">&#125;;</span><br><span class="line">Runnable task2 = () -&gt; &#123;</span><br><span class="line"><span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (;;) &#123;</span><br><span class="line"><span class="comment">// Thread.yield();</span></span><br><span class="line">System.out.println(<span class="string">&quot; ----&gt;2 &quot;</span> + count++);</span><br><span class="line"> &#125;</span><br><span class="line">&#125;;</span><br><span class="line">Thread t1 = <span class="keyword">new</span> Thread(task1, <span class="string">&quot;t1&quot;</span>);</span><br><span class="line">北京市昌平区建材城西路金燕龙办公楼一层 电话：<span class="number">400</span>-<span class="number">618</span>-<span class="number">9090</span></span><br><span class="line">Thread t2 = <span class="keyword">new</span> Thread(task2, <span class="string">&quot;t2&quot;</span>);</span><br><span class="line"><span class="comment">// t1.setPriority(Thread.MIN_PRIORITY);</span></span><br><span class="line"><span class="comment">// t2.setPriority(Thread.MAX_PRIORITY);</span></span><br><span class="line">t1.start();</span><br><span class="line">t2.start();</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="join-方法详解"><a href="#join-方法详解" class="headerlink" title="join 方法详解"></a>join 方法详解</h3><p>为什么需要 join<br>下面的代码执行，打印 r 是什么？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">int</span> r = <span class="number">0</span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">test1();</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test1</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">log.debug(<span class="string">&quot;开始&quot;</span>);</span><br><span class="line">Thread t1 = <span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">log.debug(<span class="string">&quot;开始&quot;</span>);</span><br><span class="line">sleep(<span class="number">1</span>);</span><br><span class="line">log.debug(<span class="string">&quot;结束&quot;</span>);</span><br><span class="line">r = <span class="number">10</span>;</span><br><span class="line"> &#125;);</span><br><span class="line">t1.start();</span><br><span class="line">log.debug(<span class="string">&quot;结果为:&#123;&#125;&quot;</span>, r);</span><br><span class="line">log.debug(<span class="string">&quot;结束&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>分析</p>
+<ul>
+<li>因为主线程和线程 t1 是并行执行的，t1 线程需要 1 秒之后才能算出 r=10</li>
+<li>而主线程一开始就要打印 r 的结果，所以只能打印出 r = 0<br>解决方法</li>
+<li>用 sleep 行不行？为什么？</li>
+<li>用 join，加在 t1.start() 之后即可</li>
+</ul>
+<p>以调用方角度来讲，如果</p>
+<ul>
+<li>需要等待结果返回，才能继续运行就是同步</li>
+<li>不需要等待结果返回，就能继续运行就是异步</li>
+</ul>
 
                 <hr>
                 
@@ -247,7 +318,7 @@
 
             <div class="hidden-xs col-sm-3 toc-col">
                 <div class="toc-wrap">
-                    
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B"><span class="toc-text">进程与线程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B"><span class="toc-text">进程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B"><span class="toc-text">线程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E8%80%85%E5%AF%B9%E6%AF%94"><span class="toc-text">二者对比</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%95%E7%94%A8-Rob-Pike-%E7%9A%84%E4%B8%80%E6%AE%B5%E6%8F%8F%E8%BF%B0%EF%BC%9A"><span class="toc-text">引用 Rob Pike 的一段描述：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%92%8C%E8%BF%90%E8%A1%8C%E7%BA%BF%E7%A8%8B"><span class="toc-text">创建和运行线程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E7%90%86%E4%B9%8B-Thread-%E4%B8%8E-Runnable-%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-text">原理之 Thread 与 Runnable 的关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E7%90%86%E4%B9%8B%E7%BA%BF%E7%A8%8B%E8%BF%90%E8%A1%8C"><span class="toc-text">原理之线程运行</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%88%E4%B8%8E%E6%A0%88%E5%B8%A7"><span class="toc-text">栈与栈帧</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E4%B8%8A%E4%B8%8B%E6%96%87%E5%88%87%E6%8D%A2%EF%BC%88Thread-Context-Switch%EF%BC%89"><span class="toc-text">线程上下文切换（Thread Context Switch）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#sleep-%E4%B8%8E-yield"><span class="toc-text">sleep 与 yield</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#sleep"><span class="toc-text">sleep</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#yield"><span class="toc-text">yield</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E4%BC%98%E5%85%88%E7%BA%A7"><span class="toc-text">线程优先级</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#join-%E6%96%B9%E6%B3%95%E8%AF%A6%E8%A7%A3"><span class="toc-text">join 方法详解</span></a></li></ol>
                 </div>
             </div>
         </div>
