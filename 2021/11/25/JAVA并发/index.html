@@ -86,7 +86,7 @@
                         
 							
                         <li>
-                            <a href="/tags/">TAGS</a>
+                            <a href="/about/">ABOUT</a>
                         </li>
 							
 						
@@ -94,7 +94,7 @@
                         
 							
                         <li>
-                            <a href="/about/">ABOUT</a>
+                            <a href="/tags/">TAGS</a>
                         </li>
 							
 						
@@ -247,7 +247,7 @@
 <li>多核 cpu 可以并行跑多个线程，但能否提高程序运行效率还是要分情况的</li>
 </ol>
 <ul>
-<li>有些任务，经过精心设计，将任务拆分，并行执行，当然可以提高程序的运行效率。但不是所有计算任<br>务都能拆分（参考后文的【阿姆达尔定律】）</li>
+<li>有些任务，经过精心设计，将任务拆分，并行执行，当然可以提高程序的运行效率。但不是所有计算任务都能拆分（参考后文的【阿姆达尔定律】）</li>
 <li>也不是所有任务都需要拆分，任务的目的如果不同，谈拆分和效率没啥意义</li>
 </ul>
 <ol start="3">
@@ -354,7 +354,7 @@
 <li>Tomcat 中的 Acceptor 和 Poller 线程都是守护线程，所以 Tomcat 接收到 shutdown 命令后，不会等待它们处理完当前请求</li>
 </ul>
 <h2 id="3-12五种状态"><a href="#3-12五种状态" class="headerlink" title="3.12五种状态"></a>3.12五种状态</h2><ul>
-<li>从 操作系统 层面来描述<br><img src="/Users/wangxi/Library/Application%20Support/typora-user-images/image-20211129193955406.png" alt="image-20211129193955406"></li>
+<li>从 操作系统 层面来描述<br><img src="/images/image-20211129193955406.png" alt="image-20211129193955406"></li>
 </ul>
 <ul>
 <li>【初始状态】仅是在语言层面创建了线程对象，还未与操作系统线程关联</li>
@@ -372,7 +372,7 @@
 <li>【终止状态】表示线程已经执行完毕，生命周期已经结束，不会再转换为其它状态</li>
 </ul>
 <h2 id="3-13六种状态"><a href="#3-13六种状态" class="headerlink" title="3.13六种状态"></a>3.13六种状态</h2><ul>
-<li>从 Java API 层面来描述<br><img src="/Users/wangxi/Library/Application%20Support/typora-user-images/image-20211129194423567.png" alt="image-20211129194423567"></li>
+<li>从 Java API 层面来描述<br><img src="/images/image-20211129194423567.png" alt="image-20211129194423567"></li>
 <li>NEW 线程刚被创建，但是还没有调用 start() 方法</li>
 <li>RUNNABLE 当调用了 start() 方法之后，注意，Java API 层面的 RUNNABLE 状态涵盖了 操作系统 层面的【可运行状态】、【运行状态】和【阻塞状态】（由于 BIO 导致的线程阻塞，在 Java 里无法区分，仍然认为是可运行）</li>
 <li>BLOCKED ， WAITING ， TIMED_WAITING 都是 Java API层面对【阻塞状态】的细分，后面会在状态转换一节详述</li>
