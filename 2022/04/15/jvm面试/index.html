@@ -169,6 +169,15 @@
                     </span>
                     <div class="tags text-center">
                         
+                        <a class="tag" href="/tags/#Java"
+                           title="Java">Java</a>
+                        
+                        <a class="tag" href="/tags/#Reading Note"
+                           title="Reading Note">Reading Note</a>
+                        
+                        <a class="tag" href="/tags/#Theory"
+                           title="Theory">Theory</a>
+                        
                     </div>
                 </div>
             </div>
@@ -221,6 +230,8 @@
 <li>同时JAVA堆也是GC管理的主要区域。</li>
 </ul>
 <p>  所有的对象在实例化后的整个运行周期内，都被存放在堆内存中。堆内存又被划分成不同的部分：<code>年轻代（Young Generation Space）</code>，<code>老年代（Old Generation Space）</code>。<br>  <code>年轻代</code>又可以划分为：<code>伊甸区(Eden)</code>，<code>幸存者区域(Survivor Sapce)</code></p>
+</br>
+
 <ul>
 <li>堆（Heap）：线程共享。所有的对象实例以及数组都要在堆上分配。回收器主要管理的对象。</li>
 <li>方法区（Method Area）：线程共享。存储类信息、常量、静态变量、即时编译器编译后的代码。</li>
@@ -249,7 +260,6 @@
 </li>
 </ul>
 <h3 id="分代"><a href="#分代" class="headerlink" title="分代"></a>分代</h3><p><img src="/images/image-20220319111501104.png" alt="image-20220319111501104"></p>
-<p>​    </p>
 <p>方法区：常量和静态属性</p>
 <p>miner GC 朝生夕死</p>
 <p>eden：S0：S1 8:1:1</p>
@@ -258,13 +268,41 @@
 <p>频率低</p>
 <p>常见的回收器</p>
 <p><img src="/images/image-20220319112233987.png" alt="image-20220319112233987"></p>
-<h2 id="9、CMS垃圾收集器收集的过程？"><a href="#9、CMS垃圾收集器收集的过程？" class="headerlink" title="9、CMS垃圾收集器收集的过程？"></a><strong>9、CMS垃圾收集器收集的过程？</strong></h2><p>CMS 工作机制相比其他的垃圾收集器来说更复杂，整个过程分为以下 4 个阶段：<br>初始标记<br>只是标记一下 GC Roots 能直接关联的对象，速度很快，仍然需要暂停所有的工作线程。<br>并发标记<br>进行 GC Roots 跟踪的过程，和用户线程一起工作，不需要暂停工作线程。<br>重新标记<br>为了修正在并发标记期间，因用户程序继续运行而导致标记产生变动的那一部分对象的标记记录，仍然需要暂停所有的工作线程。<br>并发清除<br>清除 GC Roots 不可达对象，和用户线程一起工作，不需要暂停工作线程。由于耗时最长的并发标记和并发清除过程中，垃圾收集线程可以和用户线程一起并发工作， 所以总体上来看CMS 收集器的内存回收和用户线程是一起并发地执行。</p>
-<h4 id="10、G1垃圾收集器收集的过程？"><a href="#10、G1垃圾收集器收集的过程？" class="headerlink" title="10、G1垃圾收集器收集的过程？"></a><strong>10、G1垃圾收集器收集的过程？</strong></h4><p>Garbage first 垃圾收集器是目前垃圾收集器理论发展的最前沿成果，相比与 CMS 收集器， G1 收集器两个最突出的改进是：<br>\1. 基于标记-整理算法，不产生内存碎片。<br>\2. 可以非常精确控制停顿时间，在不牺牲吞吐量前提下，实现低停顿垃圾回收。<br>G1 收集器避免全区域垃圾收集，它把堆内存划分为大小固定的几个独立区域，并且跟踪这些区域的垃圾收集进度，同时在后台维护一个优先级列表，每次根据所允许的收集时间， 优先回收垃圾最多的区域。区域划分和优先级区域回收机制，确保 G1 收集器可以在有限时间获得最高的垃圾收集效率。</p>
-<p><img src="!%5Bimage-20211129194423567%5D(/images/image-20220324154046539.png" alt="image-20220324154046539"></p>
-<p>类加载</p>
-<p>​    加载、验证、准备、解析初始化</p>
-<p>类加载器</p>
-<p>启动加载器、扩展加载器、应用类加载器、自定义</p>
+<h2 id="9、CMS垃圾收集器收集的过程？"><a href="#9、CMS垃圾收集器收集的过程？" class="headerlink" title="9、CMS垃圾收集器收集的过程？"></a><strong>9、CMS垃圾收集器收集的过程？</strong></h2><p>CMS 工作机制相比其他的垃圾收集器来说更复杂，整个过程分为以下 4 个阶段：</p>
+<ol>
+<li>初始标记<br>​​- 只是标记一下 GC Roots 能直接关联的对象，速度很快，仍然需要暂停所有的工作线程。</li>
+<li>并发标记<ul>
+<li>进行 GC Roots 跟踪的过程，和用户线程一起工作，不需要暂停工作线程。</li>
+</ul>
+</li>
+<li>重新标记</li>
+</ol>
+<ul>
+<li>为了修正在并发标记期间，因用户程序继续运行而导致标记产生变动的那一部分对象的标记记录，仍然需要暂停所有的工作线程。</li>
+</ul>
+<ol start="4">
+<li>并发清除<ul>
+<li>清除 GC Roots 不可达对象，和用户线程一起工作，不需要暂停工作线程。由于耗时最长的并发标记和并发清除过程中，垃圾收集线程可以和用户线程一起并发工作， 所以总体上来看CMS 收集器的内存回收和用户线程是一起并发地执行。</li>
+</ul>
+</li>
+</ol>
+<h2 id="10、G1垃圾收集器收集的过程？"><a href="#10、G1垃圾收集器收集的过程？" class="headerlink" title="10、G1垃圾收集器收集的过程？"></a><strong>10、G1垃圾收集器收集的过程？</strong></h2><ul>
+<li>Garbage first 垃圾收集器是目前垃圾收集器理论发展的最前沿成果，相比与 CMS 收集器， G1 收集器两个最突出的改进是：</li>
+</ul>
+<ol>
+<li>基于标记-整理算法，不产生内存碎片。</li>
+<li>可以非常精确控制停顿时间，在不牺牲吞吐量前提下，实现低停顿垃圾回收。</li>
+</ol>
+<p>G1 收集器避免全区域垃圾收集，它把堆内存划分为大小固定的几个独立区域，并且跟踪这些区域的垃圾收集进度，同时在后台维护一个优先级列表，每次根据所允许的收集时间， 优先回收垃圾最多的区域。区域划分和优先级区域回收机制，确保 G1 收集器可以在有限时间获得最高的垃圾收集效率。</p>
+<p><img src="/images/image-20220324154046539.png" alt="image-20220324154046539"></p>
+<p><strong>类加载</strong></p>
+<ul>
+<li>加载、验证、准备、解析初始化</li>
+</ul>
+<p><strong>类加载器</strong></p>
+<ul>
+<li>启动加载器、扩展加载器、应用类加载器、自定义</li>
+</ul>
 
                 <hr>
                 
@@ -293,7 +331,7 @@
 
             <div class="hidden-xs col-sm-3 toc-col">
                 <div class="toc-wrap">
-                    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E5%8C%BA%EF%BC%88native-area%EF%BC%89"><span class="toc-text">本地区（native area）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E5%8C%BA%EF%BC%88method-area%EF%BC%89"><span class="toc-text">方法区（method area）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A0%86%EF%BC%88heap-space%EF%BC%89"><span class="toc-text">堆（heap space）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AE%97%E6%B3%95"><span class="toc-text">垃圾回收算法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E4%BB%A3"><span class="toc-text">分代</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9%E3%80%81CMS%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8%E6%94%B6%E9%9B%86%E7%9A%84%E8%BF%87%E7%A8%8B%EF%BC%9F"><span class="toc-text">9、CMS垃圾收集器收集的过程？</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#10%E3%80%81G1%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8%E6%94%B6%E9%9B%86%E7%9A%84%E8%BF%87%E7%A8%8B%EF%BC%9F"><span class="toc-text">10、G1垃圾收集器收集的过程？</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E5%8C%BA%EF%BC%88native-area%EF%BC%89"><span class="toc-text">本地区（native area）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E5%8C%BA%EF%BC%88method-area%EF%BC%89"><span class="toc-text">方法区（method area）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A0%86%EF%BC%88heap-space%EF%BC%89"><span class="toc-text">堆（heap space）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AE%97%E6%B3%95"><span class="toc-text">垃圾回收算法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E4%BB%A3"><span class="toc-text">分代</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9%E3%80%81CMS%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8%E6%94%B6%E9%9B%86%E7%9A%84%E8%BF%87%E7%A8%8B%EF%BC%9F"><span class="toc-text">9、CMS垃圾收集器收集的过程？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10%E3%80%81G1%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8%E6%94%B6%E9%9B%86%E7%9A%84%E8%BF%87%E7%A8%8B%EF%BC%9F"><span class="toc-text">10、G1垃圾收集器收集的过程？</span></a>
                 </div>
             </div>
         </div>
