@@ -18,11 +18,11 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
     <title>
         
-        Ru6ywang｜Ruby&#39;s blog
+        Redis-缓存｜Ruby&#39;s blog
         
     </title>
 
-    <link rel="canonical" href="https://Ru6ywang.github.io/2021/08/17/Ru6ywang/">
+    <link rel="canonical" href="https://Ru6ywang.github.io/2022/04/15/Redis-缓存/">
 
     <!-- Bootstrap Core CSS -->
     
@@ -82,6 +82,14 @@
                         <a href="/">Home</a>
                     </li>
 					
+                    
+                        
+							
+                        <li>
+                            <a href="/Redis/">Redis</a>
+                        </li>
+							
+						
                     
                         
 							
@@ -159,15 +167,21 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
                 <div class="post-heading">
-                    <h1>Ru6ywang</h1>
+                    <h1>Redis-缓存</h1>
                     
                     <span class="meta">
                          作者 Ruby Wang
                         <span>
-                          日期 2021-08-17
+                          日期 2022-04-15
                          </span>
                     </span>
                     <div class="tags text-center">
+                        
+                        <a class="tag" href="/tags/#Java"
+                           title="Java">Java</a>
+                        
+                        <a class="tag" href="/tags/#Redis"
+                           title="Redis">Redis</a>
                         
                     </div>
                 </div>
@@ -176,7 +190,7 @@
     </div>
     <div class="post-title-haojen">
         <span>
-            Ru6ywang
+            Redis-缓存
         </span>
     </div>
 </header>
@@ -187,21 +201,44 @@
         <div class="row">
             <!-- Post Container -->
             <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
-                
+                <p><img src="/images/70-20220415171813097.png" alt="70-20220415171813097"><br>redis的五种基本类型</p>
+<p>set</p>
+<p>string</p>
+<p>hash</p>
+<p>SortedSet</p>
+<p>list</p>
+<p><img src="/images/image-20220311194927841.png" alt="image-20220311194927841"></p>
+<p>二、缓存穿透</p>
+<p>​    描述：</p>
+<p>​    缓存穿透是指缓存和数据库中都没有的数据，而用户不断发起请求，如发起为id为“-1”的数据或id为特别大不存在的数据。这时的用户很可能是攻击者，攻击会导致数据库压力过大。</p>
+<p>   解决方案：</p>
+<p>接口层增加校验，如用户鉴权校验，id做基础校验，id&lt;=0的直接拦截；<br>从缓存取不到的数据，在数据库中也没有取到，这时也可以将key-value对写为key-null，缓存有效时间可以设置短点，如30秒（设置太长会导致正常情况也没法使用）。这样可以防止攻击用户反复用同一个id暴力攻击</p>
+<p>三、缓存击穿</p>
+<p>   描述：</p>
+<p>   缓存击穿是指缓存中没有但数据库中有的数据（一般是缓存时间到期），这时由于并发用户特别多，同时读缓存没读到数据，又同时去数据库去取数据，引起数据库压力瞬间增大，造成过大压力</p>
+<p>解决方案：</p>
+<p>​    1、设置热点数据永不过期</p>
+<p>​    2、加互斥锁</p>
+<p><img src="/images/70.png" alt="70"></p>
+<p> 说明：</p>
+<p>​     1）缓存中有数据，直接走上述代码13行后就返回结果了</p>
+<p>​     2）缓存中没有数据，第1个进入的线程，获取锁并从数据库去取数据，没释放锁之前，其他并行进入的线程会等待100ms，再重新去缓存取数据。这样就防止都去数据库重复取数据，重复往缓存中更新数据情况出现。</p>
+<p>​     3）当然这是简化处理，理论上如果能根据key值加锁就更好了，就是线程A从数据库取key1的数据并不妨碍线程B取key2的数据，上面代码明显做不到这点。</p>
+<p>四、缓存雪崩</p>
+<p>   描述：</p>
+<p>   缓存雪崩是指缓存中数据大批量到过期时间，而查询数据量巨大，引起数据库压力过大甚至down机。和缓存击穿不同的是，    缓存击穿指并发查同一条数据，缓存雪崩是不同数据都过期了，很多数据都查不到从而查数据库。</p>
+<p>   解决方案：</p>
+<p>缓存数据的过期时间设置随机，防止同一时间大量数据过期现象发生。<br>如果缓存数据库是分布式部署，将热点数据均匀分布在不同搞得缓存数据库中。<br>设置热点数据永远不过期。</p>
+
                 <hr>
                 
 
                 <ul class="pager">
                     
-                    <li class="previous">
-                        <a href="/2021/10/11/Control-access/" data-toggle="tooltip" data-placement="top"
-                           title="Control access">&larr; Previous Post</a>
-                    </li>
-                    
                     
                     <li class="next">
-                        <a href="/2021/08/17/hello-world/" data-toggle="tooltip" data-placement="top"
-                           title="Hello World">Next Post &rarr;</a>
+                        <a href="/2022/04/15/jvm面试/" data-toggle="tooltip" data-placement="top"
+                           title="jvm面试">Next Post &rarr;</a>
                     </li>
                     
                 </ul>
