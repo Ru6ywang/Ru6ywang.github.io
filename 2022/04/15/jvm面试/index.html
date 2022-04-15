@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword" content="Ruby">
+    <meta name="theme-color" content="#600090">
+    <meta name="msapplication-navbutton-color" content="#600090">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#600090">
+    <link rel="shortcut icon" href="https://ruby-1307023850.cos.ap-chengdu.myqcloud.com/favicon.png">
+    <link rel="alternate" type="application/atom+xml" title="Ruby" href="/atom.xml">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
+    <title>
+        
+        jvm面试｜Ruby&#39;s blog
+        
+    </title>
+
+    <link rel="canonical" href="https://Ru6ywang.github.io/2022/04/15/jvm面试/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/blog-style.css">
+
+
+    <!-- Pygments Github CSS -->
+    
+<link rel="stylesheet" href="/css/syntax.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<style>
+
+    header.intro-header {
+        background-image: url('https://ruby-1307023850.cos.ap-chengdu.myqcloud.com/avatar.JPG')
+    }
+</style>
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="" class="animated fadeIn">
+<!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "true" data-istags="false
+" data-ishome = "false" >
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand animated pulse" href="/">
+                <span class="brand-logo">
+                    Ruby
+                </span>
+                's Blog
+            </a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <!-- /.navbar-collapse -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+					
+                    
+                        
+							
+                        <li>
+                            <a href="/tags/">TAGS</a>
+                        </li>
+							
+						
+                    
+                        
+							
+                        <li>
+                            <a href="/about/">ABOUT</a>
+                        </li>
+							
+						
+                    
+					
+					
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+//    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+<!-- Main Content -->
+
+<!--only post-->
+
+
+<img class="wechat-title-img"
+     src="https://ruby-1307023850.cos.ap-chengdu.myqcloud.com/cover01.jpg">
+
+
+<style>
+    
+    header.intro-header {
+        background-image: url('https://ruby-1307023850.cos.ap-chengdu.myqcloud.com/cover01.jpg')
+    }
+
+    
+</style>
+
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <div class="post-heading">
+                    <h1>jvm面试</h1>
+                    
+                    <span class="meta">
+                         作者 Ruby Wang
+                        <span>
+                          日期 2022-04-15
+                         </span>
+                    </span>
+                    <div class="tags text-center">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="post-title-haojen">
+        <span>
+            jvm面试
+        </span>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Container -->
+            <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
+                <p><img src="/images/image-20211206211554155.png" alt="image-20211129194423567"></p>
+<p>我们可以把上图的<code>运行时数据区</code>分为<code>线程私有</code>和<code>共享数据区</code>两大类。    </p>
+<ul>
+<li><p>我们可以把上图的<code>运行时数据区</code>分为<code>线程私有</code>和<code>共享数据区</code>两大类。</p>
+<ul>
+<li><code>线程私有</code>的数据区包含<code>程序计数器</code>、<code>虚拟机栈</code>、<code>本地方法栈</code>，即为<code>本地区（native area）</code></li>
+<li><code>线程共享</code>的数据区包含<code>Java堆</code>、<code>方法区</code>，在<code>方法区</code>内有一个<code>常量池</code>。</li>
+</ul>
+</li>
+</ul>
+<h4 id="本地区（native-area）"><a href="#本地区（native-area）" class="headerlink" title="本地区（native area）"></a><strong>本地区（native area）</strong></h4><ul>
+<li>程序计数器（PC Register）<br>记录正在执行的<code>虚拟机字节码</code>的地址。和计算机组成原理中提到的程序计数器PC概念类似，是线程私有的，用来记录当前执行的字节码位置。</li>
+<li>虚拟机栈（JVM Stack）<br>也就是我们常常所说的栈。<br>方法执行的内存区，每个方法执行时会在<code>虚拟机栈</code>中创建<code>栈帧</code>，用于存储局部变量表（局部变量表需要的内存在编译期间就确定了所以在方法运行期间不会改变大小），操作数栈，动态链接，方法出口等信息。每一个方法从调用开始至执行完成的过程，就对应着<code>栈帧</code>在<code>虚拟机栈</code>中从<code>入栈</code>到<code>出栈</code>的过程。</li>
+<li>这个区域有两种异常情况：<br>StackOverflowError：线程请求的栈深度大于虚拟机所允许的深度<br>OutOfMemoryError：虚拟机栈扩展到无法申请足够的内存时<ul>
+<li>本地方法栈（Native Method Stack）<br>本地方法栈则为虚拟机使用到的Native方法提供内存空间。</li>
+</ul>
+</li>
+</ul>
+<h3 id="方法区（method-area）"><a href="#方法区（method-area）" class="headerlink" title="方法区（method area）"></a>方法区（method area）</h3><ul>
+<li><p>方法区（Method Area）<br>主要存放的是已被虚拟机加载的类信息（包括类名、方法、字段）、常量、静态变量、编译器编译后的代码等数据。</p>
+<p>可以这样理解，方法区存的是类的模版。比如说方法，其实就是行为，一个类的行为都是一致的，所以存在方法区；而变量，就是数据，每一个对象的数据都是不一样的，所以存在堆里</p>
+</li>
+</ul>
+<p>  方法区有时被称为<code>持久代（PermGen）</code>。</p>
+<ul>
+<li>常量池（Runtime Constant Pool）<br>存放编译器生成的各种字面量和符号引用，是方法区的一部分。</li>
+</ul>
+<h3 id="堆（heap-space）"><a href="#堆（heap-space）" class="headerlink" title="堆（heap space）"></a>堆（heap space）</h3><ul>
+<li>Java堆一般是JVM管理的内存中最大的一块，堆在主内存中</li>
+<li>是被所有线程共享的一块内存区域，其随着JVM的创建而创建</li>
+<li>是用来存储对象本身的以及数组</li>
+<li>同时JAVA堆也是GC管理的主要区域。</li>
+</ul>
+<p>  所有的对象在实例化后的整个运行周期内，都被存放在堆内存中。堆内存又被划分成不同的部分：<code>年轻代（Young Generation Space）</code>，<code>老年代（Old Generation Space）</code>。<br>  <code>年轻代</code>又可以划分为：<code>伊甸区(Eden)</code>，<code>幸存者区域(Survivor Sapce)</code></p>
+<ul>
+<li>堆（Heap）：线程共享。所有的对象实例以及数组都要在堆上分配。回收器主要管理的对象。</li>
+<li>方法区（Method Area）：线程共享。存储类信息、常量、静态变量、即时编译器编译后的代码。</li>
+<li>虚拟机栈（JVM Stack）：线程私有。存储局部变量表、操作栈、动态链接、方法出口，对象指针。</li>
+<li>本地方法栈（Native Method Stack）：线程私有。为虚拟机使用到的Native 方法服务。如Java使用c或者c++编写的接口服务时，代码在此区运行。</li>
+<li>程序计数器（Program Counter Register）：线程私有。有些文章也翻译成PC寄存器（PC Register），同一个东西。它可以看作是当前线程所执行的字节码的行号指示器。指向下一条要执行的指令。</li>
+</ul>
+<h2 id="垃圾回收算法"><a href="#垃圾回收算法" class="headerlink" title="垃圾回收算法"></a>垃圾回收算法</h2><ul>
+<li>为什么？</li>
+</ul>
+<p>​    自动的垃圾回收机制，使程序员的工作更加简单，不用去分配内存和释放内存</p>
+<ul>
+<li>回收那些内存？</li>
+</ul>
+<p>​    可达性分析算法     没有被GC root引用的对象都是可以被回收的对象</p>
+<p><img src="/images/image-20220319111120573.png" alt="image-20220319111120573"></p>
+<ul>
+<li><p>如何进行回收？</p>
+</li>
+<li><p>标记清除法<br> 直接清除、有内存碎片，分配大对象时可能造成内容不足</p>
+</li>
+<li><p>标记整理法</p>
+<p> 先整理，在删除</p>
+</li>
+<li><p>标记复制法 在年轻代</p>
+</li>
+</ul>
+<h3 id="分代"><a href="#分代" class="headerlink" title="分代"></a>分代</h3><p><img src="/images/image-20220319111501104.png" alt="image-20220319111501104"></p>
+<p>​    </p>
+<p>方法区：常量和静态属性</p>
+<p>miner GC 朝生夕死</p>
+<p>eden：S0：S1 8:1:1</p>
+<p>年轻代：先在eden区分配，当空间不足后会，将还存活的对象复制到S0里，并且标志年龄为1，如果S0分配不足，就会把还存活的对象放到S1里去，eden此时的如果满了也会放到手S1中，年龄到15之后停止，JVM规定的年龄（可设置）</p>
+<p>magior</p>
+<p>频率低</p>
+<p>常见的回收器</p>
+<p><img src="/images/image-20220319112233987.png" alt="image-20220319112233987"></p>
+<h2 id="9、CMS垃圾收集器收集的过程？"><a href="#9、CMS垃圾收集器收集的过程？" class="headerlink" title="9、CMS垃圾收集器收集的过程？"></a><strong>9、CMS垃圾收集器收集的过程？</strong></h2><p>CMS 工作机制相比其他的垃圾收集器来说更复杂，整个过程分为以下 4 个阶段：<br>初始标记<br>只是标记一下 GC Roots 能直接关联的对象，速度很快，仍然需要暂停所有的工作线程。<br>并发标记<br>进行 GC Roots 跟踪的过程，和用户线程一起工作，不需要暂停工作线程。<br>重新标记<br>为了修正在并发标记期间，因用户程序继续运行而导致标记产生变动的那一部分对象的标记记录，仍然需要暂停所有的工作线程。<br>并发清除<br>清除 GC Roots 不可达对象，和用户线程一起工作，不需要暂停工作线程。由于耗时最长的并发标记和并发清除过程中，垃圾收集线程可以和用户线程一起并发工作， 所以总体上来看CMS 收集器的内存回收和用户线程是一起并发地执行。</p>
+<h4 id="10、G1垃圾收集器收集的过程？"><a href="#10、G1垃圾收集器收集的过程？" class="headerlink" title="10、G1垃圾收集器收集的过程？"></a><strong>10、G1垃圾收集器收集的过程？</strong></h4><p>Garbage first 垃圾收集器是目前垃圾收集器理论发展的最前沿成果，相比与 CMS 收集器， G1 收集器两个最突出的改进是：<br>\1. 基于标记-整理算法，不产生内存碎片。<br>\2. 可以非常精确控制停顿时间，在不牺牲吞吐量前提下，实现低停顿垃圾回收。<br>G1 收集器避免全区域垃圾收集，它把堆内存划分为大小固定的几个独立区域，并且跟踪这些区域的垃圾收集进度，同时在后台维护一个优先级列表，每次根据所允许的收集时间， 优先回收垃圾最多的区域。区域划分和优先级区域回收机制，确保 G1 收集器可以在有限时间获得最高的垃圾收集效率。</p>
+<p><img src="!%5Bimage-20211129194423567%5D(/images/image-20220324154046539.png" alt="image-20220324154046539"></p>
+<p>类加载</p>
+<p>​    加载、验证、准备、解析初始化</p>
+<p>类加载器</p>
+<p>启动加载器、扩展加载器、应用类加载器、自定义</p>
+
+                <hr>
+                
+
+                <ul class="pager">
+                    
+                    
+                    <li class="next">
+                        <a href="/2022/04/15/单例模式/" data-toggle="tooltip" data-placement="top"
+                           title="单例模式">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
+
+                
+
+
+                <!--加入新的评论系统-->
+                
+
+                
+
+            </div>
+
+            <div class="hidden-xs col-sm-3 toc-col">
+                <div class="toc-wrap">
+                    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E5%8C%BA%EF%BC%88native-area%EF%BC%89"><span class="toc-text">本地区（native area）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E5%8C%BA%EF%BC%88method-area%EF%BC%89"><span class="toc-text">方法区（method area）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A0%86%EF%BC%88heap-space%EF%BC%89"><span class="toc-text">堆（heap space）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AE%97%E6%B3%95"><span class="toc-text">垃圾回收算法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E4%BB%A3"><span class="toc-text">分代</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9%E3%80%81CMS%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8%E6%94%B6%E9%9B%86%E7%9A%84%E8%BF%87%E7%A8%8B%EF%BC%9F"><span class="toc-text">9、CMS垃圾收集器收集的过程？</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#10%E3%80%81G1%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8%E6%94%B6%E9%9B%86%E7%9A%84%E8%BF%87%E7%A8%8B%EF%BC%9F"><span class="toc-text">10、G1垃圾收集器收集的过程？</span></a></li></ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+
+    </div>
+</article>
+
+
+
+
+
+
+
+<!-- Footer -->
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <br>
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/桐原ah">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/Ru6ywang">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Ruby 2022
+                    <br>
+                    <span id="busuanzi_container_site_pv" style="font-size: 12px;">PV: <span id="busuanzi_value_site_pv"></span> Times</span>
+                    <br>
+                    Theme by <a target="_blank" rel="noopener" href="https://haojen.github.io/">Haojen Ma</a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/blog.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://Ru6ywang.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+<!-- swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','','2.0.0');
+</script>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!--wechat title img-->
+<img class="wechat-title-img" src="https://ruby-1307023850.cos.ap-chengdu.myqcloud.com/avatar.JPG">
+</body>
+
+</html>
