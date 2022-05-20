@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword" content="Ruby">
+    <meta name="theme-color" content="#600090">
+    <meta name="msapplication-navbutton-color" content="#600090">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#600090">
+    <link rel="shortcut icon" href="https://ruby-1307023850.cos.ap-chengdu.myqcloud.com/favicon.png">
+    <link rel="alternate" type="application/atom+xml" title="Ruby" href="/atom.xml">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
+    <title>
+        
+        ArrayList源码详解｜Ruby&#39;s blog
+        
+    </title>
+
+    <link rel="canonical" href="https://Ru6ywang.github.io/2022/05/20/ArrayList源码详解/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/blog-style.css">
+
+
+    <!-- Pygments Github CSS -->
+    
+<link rel="stylesheet" href="/css/syntax.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<style>
+
+    header.intro-header {
+        background-image: url('https://ruby-1307023850.cos.ap-chengdu.myqcloud.com/avatar.JPG')
+    }
+</style>
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="" class="animated fadeIn">
+<!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "true" data-istags="false
+" data-ishome = "false" >
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand animated pulse" href="/">
+                <span class="brand-logo">
+                    Ruby
+                </span>
+                's Blog
+            </a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <!-- /.navbar-collapse -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+					
+                    
+                        
+							
+                        <li>
+                            <a href="/about/">ABOUT</a>
+                        </li>
+							
+						
+                    
+                        
+							
+                        <li>
+                            <a href="/tags/">TAGS</a>
+                        </li>
+							
+						
+                    
+					
+					
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+//    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+<!-- Main Content -->
+
+<!--only post-->
+
+
+<img class="wechat-title-img"
+     src="https://ruby-1307023850.cos.ap-chengdu.myqcloud.com/cover01.jpg">
+
+
+<style>
+    
+    header.intro-header {
+        background-image: url('https://ruby-1307023850.cos.ap-chengdu.myqcloud.com/cover01.jpg')
+    }
+
+    
+</style>
+
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <div class="post-heading">
+                    <h1>ArrayList源码详解</h1>
+                    
+                    <span class="meta">
+                         作者 Ruby Wang
+                        <span>
+                          日期 2022-05-20
+                         </span>
+                    </span>
+                    <div class="tags text-center">
+                        
+                        <a class="tag" href="/tags/#Java"
+                           title="Java">Java</a>
+                        
+                        <a class="tag" href="/tags/#ArrayList"
+                           title="ArrayList">ArrayList</a>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="post-title-haojen">
+        <span>
+            ArrayList源码详解
+        </span>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Container -->
+            <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
+                <h2 id="初始容量"><a href="#初始容量" class="headerlink" title="初始容量"></a>初始容量</h2><p><code>ArrayList</code>有多个不同的构造函数，不同的构造函数的初始容量是不同的。快速看一下<code>ArrayList</code>源码里关于元素存放的几个私有属性：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">// 默认容量是10</span><br><span class="line">private static final int DEFAULT_CAPACITY = 10;</span><br><span class="line">// 如果容量为0的时候，就返回这个数组</span><br><span class="line">private static final Object[] EMPTY_ELEMENTDATA = &#123;&#125;;</span><br><span class="line">// 使用默认容量10时，返回这个数组</span><br><span class="line">private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = &#123;&#125;;</span><br><span class="line">// 元素存放的数组</span><br><span class="line">transient Object[] elementData;</span><br><span class="line">// 元素的个数</span><br><span class="line">private int size;</span><br><span class="line"></span><br><span class="line">// 记录被修改的次数</span><br><span class="line">protected transient int modCount = 0;</span><br><span class="line">// 数组的最大值</span><br><span class="line">private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p><code>ArrayList</code>有三个构造方法，不同的构造方法的容量是不一样的，具体可以查看JDK 源码。</p>
+<ul>
+<li>如果不传入初始容量，就使用默认容量，并设置<code>elementData</code>为<code>DEFAULTCAPACITY_EMPTY_ELEMENTDATA</code></li>
+<li>如果传入初始容量，会判断这个传入的值，如果大于0，就new一个新的Object数组，如果等于0，就直接设置<code>elementData</code>为<code>EMPTY_ELEMENTDATA</code>。</li>
+<li>如果传入一个Collection，则会调用<code>toArray()</code>方法把它变成一个数组并赋值给<code>elementData</code>。同样会判断它的长度是否为0，如果为0，设置<code>elementData</code>为<code>EMPTY_ELEMENTDATA</code>。</li>
+</ul>
+<h2 id="扩容具体指的是什么？"><a href="#扩容具体指的是什么？" class="headerlink" title="扩容具体指的是什么？"></a>扩容具体指的是什么？</h2><p>可以看到，<code>ArrayList</code>里面有两个概念，一个是<code>capacity</code>，它表示的就是“容量”，其实质是数组<code>elementData</code>的长度。而<code>size</code>则表示的“存放的元素的个数”。</p>
+<p>因为Java中，数组操作不能越界，所以我们必须要保证在插入操作的时候，不会抛出数组越界异常。</p>
+<h2 id="ArrayList是如何实现扩容的？"><a href="#ArrayList是如何实现扩容的？" class="headerlink" title="ArrayList是如何实现扩容的？"></a>ArrayList是如何实现扩容的？</h2><p>底层主要是这三个私有方法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">// 扩容一个</span><br><span class="line">private Object[] grow() &#123;</span><br><span class="line">	return grow(size + 1);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 保证扩容到期望容量minCapacity及以上</span><br><span class="line">private Object[] grow(int minCapacity) &#123;</span><br><span class="line">    return elementData = Arrays.copyOf(elementData,</span><br><span class="line">                                       newCapacity(minCapacity));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 根据期望容量minCapacity计算实际需要扩容的容量</span><br><span class="line">private int newCapacity(int minCapacity) &#123;</span><br><span class="line">    // overflow-conscious code</span><br><span class="line">    int oldCapacity = elementData.length; // 得到旧容量</span><br><span class="line">    int newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1); // 设置新容量为旧容量的1.5倍</span><br><span class="line">    if (newCapacity - minCapacity &lt;= 0) &#123; // 如果新容量仍然小于期望容量</span><br><span class="line">        if (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA) // 如果是使用的默认容量</span><br><span class="line">            return Math.max(DEFAULT_CAPACITY, minCapacity); // 取默认容量和期望容量较大值返回</span><br><span class="line">        if (minCapacity &lt; 0) // overflow // 检查期望容量是否越界（int 的范围）</span><br><span class="line">            throw new OutOfMemoryError();</span><br><span class="line">        return minCapacity; // 返回期望容量</span><br><span class="line">    &#125;</span><br><span class="line">    // 如果新容量大于期望容量，判断一下新容量是否越界</span><br><span class="line">    return (newCapacity - MAX_ARRAY_SIZE &lt;= 0)</span><br><span class="line">        ? newCapacity</span><br><span class="line">        : hugeCapacity(minCapacity);</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，底层其实是调用了<code>Arrays.copyOf</code>方法来进行扩充数组容量的。这里我们主要看一下最后一个方法newCapacity(int minCapacity)的实现。</p>
+<p><strong>默认情况下，新的容量会是原容量的1.5倍，这里用了位运算提高效率</strong>。一般情况下，如果扩容1.5倍后就大于期望容量，那就返回这个1.5倍旧容量的值。而如果小于期望容量，那就返回期望容量。这里对默认容量10做了特殊处理。</p>
+<p><strong>使用1.5倍这个数值而不是直接使用期望容量，是为了防止频繁扩容影响性能</strong>。试想如果每次add操作都要扩容一次，那性能将会非常低下。</p>
+<p>上述grow方法其实主要是用于实现自动扩容的。而用户也可以通过调用以下方法实现手动扩容：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public void ensureCapacity(int minCapacity) &#123;</span><br><span class="line">    if (minCapacity &gt; elementData.length</span><br><span class="line">        &amp;&amp; !(elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA</span><br><span class="line">             &amp;&amp; minCapacity &lt;= DEFAULT_CAPACITY)) &#123;</span><br><span class="line">        modCount++;</span><br><span class="line">        grow(minCapacity);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>为什么需要手动扩容？试想一下，如果用户已经知道即将存入大量的元素，比如目前有20个元素，即将存入2000个。那这个时候使用自动扩容就会扩容多次。而手动扩容可以一次性扩容到2000，可以提高性能。</p>
+<h2 id="ArrayList有缩容吗？"><a href="#ArrayList有缩容吗？" class="headerlink" title="ArrayList有缩容吗？"></a>ArrayList有缩容吗？</h2><p><code>ArrayList</code>没有缩容。无论是<code>remove</code>方法还是<code>clear</code>方法，它们都不会改变现有数组<code>elementData</code>的长度。但是它们都会把相应位置的元素设置为<code>null</code>，以便垃圾收集器回收掉不使用的元素，节省内存。</p>
+<h3 id="Jdk8"><a href="#Jdk8" class="headerlink" title="Jdk8"></a>Jdk8</h3><h3 id="3-1-先从-ArrayList-的构造函数说起"><a href="#3-1-先从-ArrayList-的构造函数说起" class="headerlink" title="3.1. 先从 ArrayList 的构造函数说起"></a>3.1. 先从 ArrayList 的构造函数说起</h3><p><strong>（JDK8）ArrayList 有三种方式来初始化，构造方法源码如下：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line">  * 默认初始容量大小</span><br><span class="line">  */</span><br><span class="line"> private static final int DEFAULT_CAPACITY = 10;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"> private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = &#123;&#125;;</span><br><span class="line"></span><br><span class="line"> /**</span><br><span class="line">  *默认构造函数，使用初始容量10构造一个空列表(无参数构造)</span><br><span class="line">  */</span><br><span class="line"> public ArrayList() &#123;</span><br><span class="line">     this.elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> /**</span><br><span class="line">  * 带初始容量参数的构造函数。（用户自己指定容量）</span><br><span class="line">  */</span><br><span class="line"> public ArrayList(int initialCapacity) &#123;</span><br><span class="line">     if (initialCapacity &gt; 0) &#123;//初始容量大于0</span><br><span class="line">         //创建initialCapacity大小的数组</span><br><span class="line">         this.elementData = new Object[initialCapacity];</span><br><span class="line">     &#125; else if (initialCapacity == 0) &#123;//初始容量等于0</span><br><span class="line">         //创建空数组</span><br><span class="line">         this.elementData = EMPTY_ELEMENTDATA;</span><br><span class="line">     &#125; else &#123;//初始容量小于0，抛出异常</span><br><span class="line">         throw new IllegalArgumentException(&quot;Illegal Capacity: &quot;+</span><br><span class="line">                                            initialCapacity);</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> *构造包含指定collection元素的列表，这些元素利用该集合的迭代器按顺序返回</span><br><span class="line"> *如果指定的集合为null，throws NullPointerException。</span><br><span class="line"> */</span><br><span class="line">  public ArrayList(Collection&lt;? extends E&gt; c) &#123;</span><br><span class="line">     elementData = c.toArray();</span><br><span class="line">     if ((size = elementData.length) != 0) &#123;</span><br><span class="line">         // c.toArray might (incorrectly) not return Object[] (see 6260652)</span><br><span class="line">         if (elementData.getClass() != Object[].class)</span><br><span class="line">             elementData = Arrays.copyOf(elementData, size, Object[].class);</span><br><span class="line">     &#125; else &#123;</span><br><span class="line">         // replace with empty array.</span><br><span class="line">         this.elementData = EMPTY_ELEMENTDATA;</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>细心的同学一定会发现 ：<strong>以无参数构造方法创建 <code>ArrayList</code> 时，实际上初始化赋值的是一个空数组。当真正对数组进行添加元素操作时，才真正分配容量。即向数组中添加第一个元素时，数组容量扩为 10。</strong> 下面在我们分析 ArrayList 扩容时会讲到这一点内容！</p>
+<blockquote>
+<p>补充：JDK6 new 无参构造的 <code>ArrayList</code> 对象时，直接创建了长度是 10 的 <code>Object[]</code> 数组 elementData 。</p>
+</blockquote>
+<h3 id="3-2-一步一步分析-ArrayList-扩容机制"><a href="#3-2-一步一步分析-ArrayList-扩容机制" class="headerlink" title="3.2. 一步一步分析 ArrayList 扩容机制"></a>3.2. 一步一步分析 ArrayList 扩容机制</h3><p>这里以无参构造函数创建的 ArrayList 为例分析</p>
+<h4 id="3-2-1-先来看-add-方法"><a href="#3-2-1-先来看-add-方法" class="headerlink" title="3.2.1. 先来看 add 方法"></a>3.2.1. 先来看 <code>add</code> 方法</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"> /**</span><br><span class="line">  * 将指定的元素追加到此列表的末尾。</span><br><span class="line">  */</span><br><span class="line"> public boolean add(E e) &#123;</span><br><span class="line">//添加元素之前，先调用ensureCapacityInternal方法</span><br><span class="line">     ensureCapacityInternal(size + 1);  // Increments modCount!!</span><br><span class="line">     //这里看到ArrayList添加元素的实质就相当于为数组赋值</span><br><span class="line">     elementData[size++] = e;</span><br><span class="line">     return true;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>注意</strong> ：JDK11 移除了 <code>ensureCapacityInternal()</code> 和 <code>ensureExplicitCapacity()</code> 方法</p>
+</blockquote>
+<h4 id="3-2-2-再来看看-ensureCapacityInternal-方法"><a href="#3-2-2-再来看看-ensureCapacityInternal-方法" class="headerlink" title="3.2.2. 再来看看 ensureCapacityInternal() 方法"></a>3.2.2. 再来看看 <code>ensureCapacityInternal()</code> 方法</h4><p>（JDK7）可以看到 <code>add</code> 方法 首先调用了<code>ensureCapacityInternal(size + 1)</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">//得到最小扩容量</span><br><span class="line"> private void ensureCapacityInternal(int minCapacity) &#123;</span><br><span class="line">     if (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA) &#123;</span><br><span class="line">           // 获取默认的容量和传入参数的较大值</span><br><span class="line">         minCapacity = Math.max(DEFAULT_CAPACITY, minCapacity);</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     ensureExplicitCapacity(minCapacity);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>当 要 add 进第 1 个元素时，minCapacity 为 1，在 Math.max()方法比较后，minCapacity 为 10。</strong></p>
+<blockquote>
+<p>此处和后续 JDK8 代码格式化略有不同，核心代码基本一样。</p>
+</blockquote>
+<h4 id="3-2-3-ensureExplicitCapacity-方法"><a href="#3-2-3-ensureExplicitCapacity-方法" class="headerlink" title="3.2.3. ensureExplicitCapacity() 方法"></a>3.2.3. <code>ensureExplicitCapacity()</code> 方法</h4><p>如果调用 <code>ensureCapacityInternal()</code> 方法就一定会进入（执行）这个方法，下面我们来研究一下这个方法的源码！</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">//判断是否需要扩容</span><br><span class="line">  private void ensureExplicitCapacity(int minCapacity) &#123;</span><br><span class="line">      modCount++;</span><br><span class="line"></span><br><span class="line">      // overflow-conscious code</span><br><span class="line">      if (minCapacity - elementData.length &gt; 0)</span><br><span class="line">          //调用grow方法进行扩容，调用此方法代表已经开始扩容了</span><br><span class="line">          grow(minCapacity);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们来仔细分析一下：</p>
+<ul>
+<li>当我们要 add 进第 1 个元素到 ArrayList 时，elementData.length 为 0 （因为还是一个空的 list），因为执行了 <code>ensureCapacityInternal()</code> 方法 ，所以 minCapacity 此时为 10。此时，<code>minCapacity - elementData.length &gt; 0</code>成立，所以会进入 <code>grow(minCapacity)</code> 方法。</li>
+<li>当 add 第 2 个元素时，minCapacity 为 2，此时 e lementData.length(容量)在添加第一个元素后扩容成 10 了。此时，<code>minCapacity - elementData.length &gt; 0</code> 不成立，所以不会进入 （执行）<code>grow(minCapacity)</code> 方法。</li>
+<li>添加第 3、4···到第 10 个元素时，依然不会执行 grow 方法，数组容量都为 10。</li>
+</ul>
+<p>直到添加第 11 个元素，minCapacity(为 11)比 elementData.length（为 10）要大。进入 grow 方法进行扩容。</p>
+<h4 id="3-2-4-grow-方法"><a href="#3-2-4-grow-方法" class="headerlink" title="3.2.4. grow() 方法"></a>3.2.4. <code>grow()</code> 方法</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 要分配的最大数组大小</span><br><span class="line"> */</span><br><span class="line">private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * ArrayList扩容的核心方法。</span><br><span class="line"> */</span><br><span class="line">private void grow(int minCapacity) &#123;</span><br><span class="line">    // oldCapacity为旧容量，newCapacity为新容量</span><br><span class="line">    int oldCapacity = elementData.length;</span><br><span class="line">    //将oldCapacity 右移一位，其效果相当于oldCapacity /2，</span><br><span class="line">    //我们知道位运算的速度远远快于整除运算，整句运算式的结果就是将新容量更新为旧容量的1.5倍，</span><br><span class="line">    int newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1);</span><br><span class="line">    //然后检查新容量是否大于最小需要容量，若还是小于最小需要容量，那么就把最小需要容量当作数组的新容量，</span><br><span class="line">    if (newCapacity - minCapacity &lt; 0)</span><br><span class="line">        newCapacity = minCapacity;</span><br><span class="line">   // 如果新容量大于 MAX_ARRAY_SIZE,进入(执行) `hugeCapacity()` 方法来比较 minCapacity 和 MAX_ARRAY_SIZE，</span><br><span class="line">   //如果minCapacity大于最大容量，则新容量则为`Integer.MAX_VALUE`，否则，新容量大小则为 MAX_ARRAY_SIZE 即为 `Integer.MAX_VALUE - 8`。</span><br><span class="line">    if (newCapacity - MAX_ARRAY_SIZE &gt; 0)</span><br><span class="line">        newCapacity = hugeCapacity(minCapacity);</span><br><span class="line">    // minCapacity is usually close to size, so this is a win:</span><br><span class="line">    elementData = Arrays.copyOf(elementData, newCapacity);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>int newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1),所以 ArrayList 每次扩容之后容量都会变为原来的 1.5 倍左右（oldCapacity 为偶数就是 1.5 倍，否则是 1.5 倍左右）！</strong> 奇偶不同，比如 ：10+10/2 = 15, 33+33/2=49。如果是奇数的话会丢掉小数.</p>
+<blockquote>
+<p>“&gt;&gt;”（移位运算符）：&gt;&gt;1 右移一位相当于除 2，右移 n 位相当于除以 2 的 n 次方。这里 oldCapacity 明显右移了 1 位所以相当于 oldCapacity /2。对于大数据的 2 进制运算,位移运算符比那些普通运算符的运算要快很多,因为程序仅仅移动一下而已,不去计算,这样提高了效率,节省了资源</p>
+</blockquote>
+<p><strong>我们再来通过例子探究一下<code>grow()</code> 方法 ：</strong></p>
+<ul>
+<li>当 add 第 1 个元素时，oldCapacity 为 0，经比较后第一个 if 判断成立，newCapacity = minCapacity(为 10)。但是第二个 if 判断不会成立，即 newCapacity 不比 MAX_ARRAY_SIZE 大，则不会进入 <code>hugeCapacity</code> 方法。数组容量为 10，add 方法中 return true,size 增为 1。</li>
+<li>当 add 第 11 个元素进入 grow 方法时，newCapacity 为 15，比 minCapacity（为 11）大，第一个 if 判断不成立。新容量没有大于数组最大 size，不会进入 hugeCapacity 方法。数组容量扩为 15，add 方法中 return true,size 增为 11。</li>
+<li>以此类推······</li>
+</ul>
+<p><strong>这里补充一点比较重要，但是容易被忽视掉的知识点：</strong></p>
+<ul>
+<li>java 中的 <code>length</code>属性是针对数组说的,比如说你声明了一个数组,想知道这个数组的长度则用到了 length 这个属性.</li>
+<li>java 中的 <code>length()</code> 方法是针对字符串说的,如果想看这个字符串的长度则用到 <code>length()</code> 这个方法.</li>
+<li>java 中的 <code>size()</code> 方法是针对泛型集合说的,如果想看这个泛型有多少个元素,就调用此方法来查看!</li>
+</ul>
+<h4 id="3-2-5-hugeCapacity-方法。"><a href="#3-2-5-hugeCapacity-方法。" class="headerlink" title="3.2.5. hugeCapacity() 方法。"></a>3.2.5. <code>hugeCapacity()</code> 方法。</h4><p>从上面 <code>grow()</code> 方法源码我们知道： 如果新容量大于 MAX_ARRAY_SIZE,进入(执行) <code>hugeCapacity()</code> 方法来比较 minCapacity 和 MAX_ARRAY_SIZE，如果 minCapacity 大于最大容量，则新容量则为<code>Integer.MAX_VALUE</code>，否则，新容量大小则为 MAX_ARRAY_SIZE 即为 <code>Integer.MAX_VALUE - 8</code>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">private static int hugeCapacity(int minCapacity) &#123;</span><br><span class="line">    if (minCapacity &lt; 0) // overflow</span><br><span class="line">        throw new OutOfMemoryError();</span><br><span class="line">    //对minCapacity和MAX_ARRAY_SIZE进行比较</span><br><span class="line">    //若minCapacity大，将Integer.MAX_VALUE作为新数组的大小</span><br><span class="line">    //若MAX_ARRAY_SIZE大，将MAX_ARRAY_SIZE作为新数组的大小</span><br><span class="line">    //MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;</span><br><span class="line">    return (minCapacity &gt; MAX_ARRAY_SIZE) ?</span><br><span class="line">        Integer.MAX_VALUE :</span><br><span class="line">        MAX_ARRAY_SIZE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-System-arraycopy-和-Arrays-copyOf-方法"><a href="#3-3-System-arraycopy-和-Arrays-copyOf-方法" class="headerlink" title="3.3. System.arraycopy() 和 Arrays.copyOf()方法"></a>3.3. <code>System.arraycopy()</code> 和 <code>Arrays.copyOf()</code>方法</h3><p>jwz阅读源码的话，我们就会发现 ArrayList 中大量调用了这两个方法。比如：我们上面讲的扩容操作以及<code>add(int index, E element)</code>、<code>toArray()</code> 等方法中都用到了该方法！</p>
+<h4 id="3-3-1-System-arraycopy-方法"><a href="#3-3-1-System-arraycopy-方法" class="headerlink" title="3.3.1. System.arraycopy() 方法"></a>3.3.1. <code>System.arraycopy()</code> 方法</h4><p>源码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">// 我们发现 arraycopy 是一个 native 方法,接下来我们解释一下各个参数的具体意义</span><br><span class="line">/**</span><br><span class="line">*   复制数组</span><br><span class="line">* @param src 源数组</span><br><span class="line">* @param srcPos 源数组中的起始位置</span><br><span class="line">* @param dest 目标数组</span><br><span class="line">* @param destPos 目标数组中的起始位置</span><br><span class="line">* @param length 要复制的数组元素的数量</span><br><span class="line">*/</span><br><span class="line">public static native void arraycopy(Object src,  int  srcPos,</span><br><span class="line">                                    Object dest, int destPos,</span><br><span class="line">                                    int length);</span><br></pre></td></tr></table></figure>
+
+<p>场景：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 在此列表中的指定位置插入指定的元素。</span><br><span class="line"> *先调用 rangeCheckForAdd 对index进行界限检查；然后调用 ensureCapacityInternal 方法保证capacity足够大；</span><br><span class="line"> *再将从index开始之后的所有成员后移一个位置；将element插入index位置；最后size加1。</span><br><span class="line"> */</span><br><span class="line">public void add(int index, E element) &#123;</span><br><span class="line">    rangeCheckForAdd(index);</span><br><span class="line"></span><br><span class="line">    ensureCapacityInternal(size + 1);  // Increments modCount!!</span><br><span class="line">    //arraycopy()方法实现数组自己复制自己</span><br><span class="line">    //elementData:源数组;index:源数组中的起始位置;elementData：目标数组；index + 1：目标数组中的起始位置； size - index：要复制的数组元素的数量；</span><br><span class="line">    System.arraycopy(elementData, index, elementData, index + 1, size - index);</span><br><span class="line">    elementData[index] = element;</span><br><span class="line">    size++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们写一个简单的方法测试以下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public class ArraycopyTest &#123;</span><br><span class="line"></span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		// TODO Auto-generated method stub</span><br><span class="line">		int[] a = new int[10];</span><br><span class="line">		a[0] = 0;</span><br><span class="line">		a[1] = 1;</span><br><span class="line">		a[2] = 2;</span><br><span class="line">		a[3] = 3;</span><br><span class="line">		System.arraycopy(a, 2, a, 3, 3);</span><br><span class="line">		a[2]=99;</span><br><span class="line">		for (int i = 0; i &lt; a.length; i++) &#123;</span><br><span class="line">			System.out.print(a[i] + &quot; &quot;);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 1 99 2 3 0 0 0 0 0</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-3-2-Arrays-copyOf-方法"><a href="#3-3-2-Arrays-copyOf-方法" class="headerlink" title="3.3.2. Arrays.copyOf()方法"></a>3.3.2. <code>Arrays.copyOf()</code>方法</h4><p>源码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">   public static int[] copyOf(int[] original, int newLength) &#123;</span><br><span class="line">   	// 申请一个新的数组</span><br><span class="line">       int[] copy = new int[newLength];</span><br><span class="line">// 调用System.arraycopy,将源数组中的数据进行拷贝,并返回新的数组</span><br><span class="line">       System.arraycopy(original, 0, copy, 0,</span><br><span class="line">                        Math.min(original.length, newLength));</span><br><span class="line">       return copy;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>场景：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line">  以正确的顺序返回一个包含此列表中所有元素的数组（从第一个到最后一个元素）; 返回的数组的运行时类型是指定数组的运行时类型。</span><br><span class="line">  */</span><br><span class="line"> public Object[] toArray() &#123;</span><br><span class="line"> //elementData：要复制的数组；size：要复制的长度</span><br><span class="line">     return Arrays.copyOf(elementData, size);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>个人觉得使用 <code>Arrays.copyOf()</code>方法主要是为了给原有数组扩容，测试代码如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public class ArrayscopyOfTest &#123;</span><br><span class="line"></span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		int[] a = new int[3];</span><br><span class="line">		a[0] = 0;</span><br><span class="line">		a[1] = 1;</span><br><span class="line">		a[2] = 2;</span><br><span class="line">		int[] b = Arrays.copyOf(a, 10);</span><br><span class="line">		System.out.println(&quot;b.length&quot;+b.length);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">10</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-3-3-两者联系和区别"><a href="#3-3-3-两者联系和区别" class="headerlink" title="3.3.3. 两者联系和区别"></a>3.3.3. 两者联系和区别</h4><p><strong>联系：</strong></p>
+<p>看两者源代码可以发现 <code>copyOf()</code>内部实际调用了 <code>System.arraycopy()</code> 方法</p>
+<p><strong>区别：</strong></p>
+<p><code>arraycopy()</code> 需要目标数组，将原数组拷贝到你自己定义的数组里或者原数组，而且可以选择拷贝的起点和长度以及放入新数组中的位置 <code>copyOf()</code> 是系统自动在内部新建一个数组，并返回该数组。</p>
+<h3 id="3-4-ensureCapacity方法"><a href="#3-4-ensureCapacity方法" class="headerlink" title="3.4. ensureCapacity方法"></a>3.4. <code>ensureCapacity</code>方法</h3><p>ArrayList 源码中有一个 <code>ensureCapacity</code> 方法不知道大家注意到没有，这个方法 ArrayList 内部没有被调用过，所以很显然是提供给用户调用的，那么这个方法有什么作用呢？</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line">如有必要，增加此 ArrayList 实例的容量，以确保它至少可以容纳由minimum capacity参数指定的元素数。</span><br><span class="line"> *</span><br><span class="line"> * @param   minCapacity   所需的最小容量</span><br><span class="line"> */</span><br><span class="line">public void ensureCapacity(int minCapacity) &#123;</span><br><span class="line">    int minExpand = (elementData != DEFAULTCAPACITY_EMPTY_ELEMENTDATA)</span><br><span class="line">        // any size if not default element table</span><br><span class="line">        ? 0</span><br><span class="line">        // larger than default for default empty table. It&#x27;s already</span><br><span class="line">        // supposed to be at default size.</span><br><span class="line">        : DEFAULT_CAPACITY;</span><br><span class="line"></span><br><span class="line">    if (minCapacity &gt; minExpand) &#123;</span><br><span class="line">        ensureExplicitCapacity(minCapacity);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>最好在 add 大量元素之前用 <code>ensureCapacity</code> 方法，以减少增量重新分配的次数</strong></p>
+<p>我们通过下面的代码实际测试以下这个方法的效果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public class EnsureCapacityTest &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		ArrayList&lt;Object&gt; list = new ArrayList&lt;Object&gt;();</span><br><span class="line">		final int N = 10000000;</span><br><span class="line">		long startTime = System.currentTimeMillis();</span><br><span class="line">		for (int i = 0; i &lt; N; i++) &#123;</span><br><span class="line">			list.add(i);</span><br><span class="line">		&#125;</span><br><span class="line">		long endTime = System.currentTimeMillis();</span><br><span class="line">		System.out.println(&quot;使用ensureCapacity方法前：&quot;+(endTime - startTime));</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">使用ensureCapacity方法前：2158</span><br><span class="line">public class EnsureCapacityTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        ArrayList&lt;Object&gt; list = new ArrayList&lt;Object&gt;();</span><br><span class="line">        final int N = 10000000;</span><br><span class="line">        list = new ArrayList&lt;Object&gt;();</span><br><span class="line">        long startTime1 = System.currentTimeMillis();</span><br><span class="line">        list.ensureCapacity(N);</span><br><span class="line">        for (int i = 0; i &lt; N; i++) &#123;</span><br><span class="line">            list.add(i);</span><br><span class="line">        &#125;</span><br><span class="line">        long endTime1 = System.currentTimeMillis();</span><br><span class="line">        System.out.println(&quot;使用ensureCapacity方法后：&quot;+(endTime1 - startTime1));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">使用ensureCapacity方法后：1773</span><br></pre></td></tr></table></figure>
+
+<p>通过运行结果，我们可以看出向 ArrayList 添加大量元素之前最好先使用<code>ensureCapacity</code> 方法，以减少增量重新分配的次数。</p>
+
+                <hr>
+                
+
+                <ul class="pager">
+                    
+                    
+                    <li class="next">
+                        <a href="/2022/05/11/MySQL-事务/" data-toggle="tooltip" data-placement="top"
+                           title="MySQL事务">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
+
+                
+
+
+                <!--加入新的评论系统-->
+                
+
+                
+
+            </div>
+
+            <div class="hidden-xs col-sm-3 toc-col">
+                <div class="toc-wrap">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%AE%B9%E9%87%8F"><span class="toc-text">初始容量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%A9%E5%AE%B9%E5%85%B7%E4%BD%93%E6%8C%87%E7%9A%84%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">扩容具体指的是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ArrayList%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%89%A9%E5%AE%B9%E7%9A%84%EF%BC%9F"><span class="toc-text">ArrayList是如何实现扩容的？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ArrayList%E6%9C%89%E7%BC%A9%E5%AE%B9%E5%90%97%EF%BC%9F"><span class="toc-text">ArrayList有缩容吗？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Jdk8"><span class="toc-text">Jdk8</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E5%85%88%E4%BB%8E-ArrayList-%E7%9A%84%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E8%AF%B4%E8%B5%B7"><span class="toc-text">3.1. 先从 ArrayList 的构造函数说起</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E4%B8%80%E6%AD%A5%E4%B8%80%E6%AD%A5%E5%88%86%E6%9E%90-ArrayList-%E6%89%A9%E5%AE%B9%E6%9C%BA%E5%88%B6"><span class="toc-text">3.2. 一步一步分析 ArrayList 扩容机制</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-1-%E5%85%88%E6%9D%A5%E7%9C%8B-add-%E6%96%B9%E6%B3%95"><span class="toc-text">3.2.1. 先来看 add 方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-2-%E5%86%8D%E6%9D%A5%E7%9C%8B%E7%9C%8B-ensureCapacityInternal-%E6%96%B9%E6%B3%95"><span class="toc-text">3.2.2. 再来看看 ensureCapacityInternal() 方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-3-ensureExplicitCapacity-%E6%96%B9%E6%B3%95"><span class="toc-text">3.2.3. ensureExplicitCapacity() 方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-4-grow-%E6%96%B9%E6%B3%95"><span class="toc-text">3.2.4. grow() 方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-5-hugeCapacity-%E6%96%B9%E6%B3%95%E3%80%82"><span class="toc-text">3.2.5. hugeCapacity() 方法。</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-System-arraycopy-%E5%92%8C-Arrays-copyOf-%E6%96%B9%E6%B3%95"><span class="toc-text">3.3. System.arraycopy() 和 Arrays.copyOf()方法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-3-1-System-arraycopy-%E6%96%B9%E6%B3%95"><span class="toc-text">3.3.1. System.arraycopy() 方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-3-2-Arrays-copyOf-%E6%96%B9%E6%B3%95"><span class="toc-text">3.3.2. Arrays.copyOf()方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-3-3-%E4%B8%A4%E8%80%85%E8%81%94%E7%B3%BB%E5%92%8C%E5%8C%BA%E5%88%AB"><span class="toc-text">3.3.3. 两者联系和区别</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-ensureCapacity%E6%96%B9%E6%B3%95"><span class="toc-text">3.4. ensureCapacity方法</span></a></li></ol></li></ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+
+    </div>
+</article>
+
+
+
+
+
+
+
+<!-- Footer -->
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <br>
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/桐原ah">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/Ru6ywang">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Ruby 2022
+                    <br>
+                    <span id="busuanzi_container_site_pv" style="font-size: 12px;">PV: <span id="busuanzi_value_site_pv"></span> Times</span>
+                    <br>
+                    Theme by <a target="_blank" rel="noopener" href="https://haojen.github.io/">Haojen Ma</a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/blog.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://Ru6ywang.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+<!-- swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','','2.0.0');
+</script>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!--wechat title img-->
+<img class="wechat-title-img" src="https://ruby-1307023850.cos.ap-chengdu.myqcloud.com/avatar.JPG">
+</body>
+
+</html>
