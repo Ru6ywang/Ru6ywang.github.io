@@ -86,7 +86,7 @@
                         
 							
                         <li>
-                            <a href="/about/">ABOUT</a>
+                            <a href="/tags/">TAGS</a>
                         </li>
 							
 						
@@ -94,7 +94,7 @@
                         
 							
                         <li>
-                            <a href="/tags/">TAGS</a>
+                            <a href="/about/">ABOUT</a>
                         </li>
 							
 						
@@ -205,7 +205,9 @@
 
 <h2 id="3、饿汉模式"><a href="#3、饿汉模式" class="headerlink" title="3、饿汉模式"></a>3、饿汉模式</h2><p><strong>描述：</strong>这种方式比较常用，但容易产生垃圾对象。<br>优点：没有加锁，执行效率会提高。<br>缺点：类加载时就初始化，浪费内存。<br>它基于 classloader 机制避免了多线程的同步问题，不过，instance 在类装载时就实例化，虽然导致类装载的原因有很多种，在单例模式中大多数都是调用 getInstance 方法， 但是也不能确定有其他的方式（或者其他的静态方法）导致类装载，这时候初始化 instance 显然没有达到 lazy loading 的效果。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Singleton instance = <span class="keyword">new</span> Singleton();  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Singleton</span> <span class="params">()</span></span>&#123;&#125;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getInstance</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">return</span> instance;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<h2 id="4、双重检测"><a href="#4、双重检测" class="headerlink" title="4、双重检测"></a>4、双重检测</h2><p><strong>描述：</strong> 饿汉式和懒汉式的单例都有缺点，双重检测的实现方式解决了这两者的缺点。<br>这种实现方式在 Java 1.4 及更早的版本中有些问题，就是指令重排序，可能会导致 Singleton 对象被 new 出来，并且赋值给 instance 之后，还没来得及初始化，就被另一个线程使用了。<br>要解决这个问题，需要给 instance 成员变量加上 volatile 关键字，从而禁止指令重排序。<br>而高版本的 Java 已在 JDK 内部解决了这个问题，所以高版本的 Java 不需要关注这个问题。</p>
+<p>优点：<br>对象的创建是线程安全的。<br>支持延时加载。<br>获取对象时不需要加锁。<br>双重检测将懒汉式中的 synchronized 方法改成了 synchronized 代码块。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123; </span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> Singleton instance;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">private</span> <span class="title">Singleton</span> <span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (instance == <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="keyword">synchronized</span>(Singleton.class) &#123; <span class="comment">// 注意这里是类级别的锁</span></span><br><span class="line">        <span class="keyword">if</span> (instance == <span class="keyword">null</span>) &#123;       <span class="comment">// 这里的检测避免多线程并发时多次创建对象</span></span><br><span class="line">          instance = <span class="keyword">new</span> Singleton();</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> instance;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
                 <hr>
                 
@@ -239,7 +241,7 @@
 
             <div class="hidden-xs col-sm-3 toc-col">
                 <div class="toc-wrap">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E6%87%92%E6%B1%89%EF%BC%8C%E7%BA%BF%E7%A8%8B%E4%B8%8D%E5%AE%89%E5%85%A8"><span class="toc-text">1、懒汉，线程不安全</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E6%87%92%E6%B1%89%EF%BC%8C%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="toc-text">2、懒汉，线程安全</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81%E9%A5%BF%E6%B1%89%E6%A8%A1%E5%BC%8F"><span class="toc-text">3、饿汉模式</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E6%87%92%E6%B1%89%EF%BC%8C%E7%BA%BF%E7%A8%8B%E4%B8%8D%E5%AE%89%E5%85%A8"><span class="toc-text">1、懒汉，线程不安全</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E6%87%92%E6%B1%89%EF%BC%8C%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="toc-text">2、懒汉，线程安全</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81%E9%A5%BF%E6%B1%89%E6%A8%A1%E5%BC%8F"><span class="toc-text">3、饿汉模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4%E3%80%81%E5%8F%8C%E9%87%8D%E6%A3%80%E6%B5%8B"><span class="toc-text">4、双重检测</span></a></li></ol>
                 </div>
             </div>
         </div>
