@@ -169,6 +169,12 @@
                     </span>
                     <div class="tags text-center">
                         
+                        <a class="tag" href="/tags/#Java"
+                           title="Java">Java</a>
+                        
+                        <a class="tag" href="/tags/#ConcurrentHashMap"
+                           title="ConcurrentHashMap">ConcurrentHashMap</a>
+                        
                     </div>
                 </div>
             </div>
@@ -187,7 +193,16 @@
         <div class="row">
             <!-- Post Container -->
             <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
-                
+                <p>JDK1.8 的 <code>ConcurrentHashMap</code> 不再是 <strong>Segment 数组 + HashEntry 数组 + 链表</strong>，而是 <strong>Node 数组 + 链表 / 红黑树</strong>。不过，Node 只能用于链表的情况，红黑树的情况需要使用 **<code>TreeNode</code>**。当冲突链表达到一定长度时，链表会转换成红黑树。</p>
+<h3 id="1-5-10-ConcurrentHashMap-线程安全的具体实现方式-底层具体实现"><a href="#1-5-10-ConcurrentHashMap-线程安全的具体实现方式-底层具体实现" class="headerlink" title="1.5.10. ConcurrentHashMap 线程安全的具体实现方式/底层具体实现"></a>1.5.10. ConcurrentHashMap 线程安全的具体实现方式/底层具体实现</h3><h4 id="1-5-10-1-JDK1-7"><a href="#1-5-10-1-JDK1-7" class="headerlink" title="1.5.10.1. JDK1.7"></a>1.5.10.1. JDK1.7</h4><p>首先将数据分为一段一段的存储，然后给每一段数据配一把锁，当一个线程占用锁访问其中一个段数据时，其他段的数据也能被其他线程访问。</p>
+<p><strong><code>ConcurrentHashMap</code> 是由 <code>Segment</code> 数组结构和 <code>HashEntry</code> 数组结构组成</strong>。</p>
+<p>Segment 实现了 <code>ReentrantLock</code>,所以 <code>Segment</code> 是一种可重入锁，扮演锁的角色。<code>HashEntry</code> 用于存储键值对数据。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">static class Segment&lt;K,V&gt; extends ReentrantLock implements Serializable &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>一个 <code>ConcurrentHashMap</code> 里包含一个 <code>Segment</code> 数组。<code>Segment</code> 的结构和 <code>HashMap</code> 类似，是一种数组和链表结构，一个 <code>Segment</code> 包含一个 <code>HashEntry</code> 数组，每个 <code>HashEntry</code> 是一个链表结构的元素，每个 <code>Segment</code> 守护着一个 <code>HashEntry</code> 数组里的元素，当对 <code>HashEntry</code> 数组的数据进行修改时，必须首先获得对应的 <code>Segment</code> 的锁。</p>
+<h4 id="1-5-10-2-JDK1-8"><a href="#1-5-10-2-JDK1-8" class="headerlink" title="1.5.10.2. JDK1.8"></a>1.5.10.2. JDK1.8</h4><p><code>ConcurrentHashMap</code> 取消了 <code>Segment</code> 分段锁，采用 CAS 和 <code>synchronized</code> 来保证并发安全。数据结构跟 HashMap1.8 的结构类似，数组+链表/红黑二叉树。Java 8 在链表长度超过一定阈值（8）时将链表（寻址时间复杂度为 O(N)）转换为红黑树（寻址时间复杂度为 O(log(N))）</p>
+<p><code>synchronized</code> <strong>只锁定当前链表或红黑二叉树的首节点</strong>，这样只要 hash 不冲突，就不会产生并发，效率又提升 N 倍。</p>
+
                 <hr>
                 
 
@@ -215,7 +230,7 @@
 
             <div class="hidden-xs col-sm-3 toc-col">
                 <div class="toc-wrap">
-                    
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-5-10-ConcurrentHashMap-%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F-%E5%BA%95%E5%B1%82%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0"><span class="toc-text">1.5.10. ConcurrentHashMap 线程安全的具体实现方式&#x2F;底层具体实现</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-5-10-1-JDK1-7"><span class="toc-text">1.5.10.1. JDK1.7</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-5-10-2-JDK1-8"><span class="toc-text">1.5.10.2. JDK1.8</span></a></li></ol></li></ol>
                 </div>
             </div>
         </div>
