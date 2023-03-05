@@ -86,7 +86,7 @@
                         
 							
                         <li>
-                            <a href="/about/">ABOUT</a>
+                            <a href="/tags/">TAGS</a>
                         </li>
 							
 						
@@ -94,7 +94,7 @@
                         
 							
                         <li>
-                            <a href="/tags/">TAGS</a>
+                            <a href="/about/">ABOUT</a>
                         </li>
 							
 						
@@ -282,6 +282,38 @@
     <div class="row">
         <div class="col-lg-8 col-lg-offset-1 col-md-8 col-md-offset-1 col-sm-12 col-xs-12 post-container">
             <!-- Main Content -->
+
+
+
+<div class="post-preview "
+     style="background-image: url('https://ruby-1307023850.cos.ap-chengdu.myqcloud.com/cover01.jpg')">
+    <a href="/2022/04/15/Redis-缓存/">
+        <h2 class="post-title">
+            Redis-缓存
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2022-04-15
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                
+一、redis的五种基本类型
+set 
+string
+hash
+SortedSet
+list
+
+
+二、缓存穿透描述：​    缓存穿透是指缓存和数据库中都没有的数据，而用户不断发起请求，如发起为id为“-1”的数据或id为特别大不存在的数据。这时的用户很可能是攻击者，攻击会导致数据库压力过大。..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
 
 
 
@@ -512,29 +544,6 @@ p1走的..
 
 
 
-<div class="post-preview "
-     style="background-image: url('https://ruby-1307023850.cos.ap-chengdu.myqcloud.com/cover01.jpg')">
-    <a href="/2021/08/17/hello-world/">
-        <h2 class="post-title">
-            Hello World
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2021-08-17
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer i..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
 
 <!-- 翻页 pager -->
 
@@ -544,6 +553,10 @@ p1走的..
         <a href="/">&larr; Newer Posts</a>
     </li>
     
+    
+    <li class="next">
+        <a href="/page/3/">Older Posts &rarr;</a>
+    </li>
     
 </ul>
 

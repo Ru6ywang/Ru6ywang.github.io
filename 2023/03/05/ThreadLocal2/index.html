@@ -18,11 +18,11 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
     <title>
         
-        合并两个有序链表｜Ruby&#39;s blog
+        ThreadLocal2｜Ruby&#39;s blog
         
     </title>
 
-    <link rel="canonical" href="https://Ru6ywang.github.io/2021/11/04/合并两个有序链表/">
+    <link rel="canonical" href="https://Ru6ywang.github.io/2023/03/05/ThreadLocal2/">
 
     <!-- Bootstrap Core CSS -->
     
@@ -159,12 +159,12 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
                 <div class="post-heading">
-                    <h1>合并两个有序链表</h1>
+                    <h1>ThreadLocal2</h1>
                     
                     <span class="meta">
                          作者 Ruby Wang
                         <span>
-                          日期 2021-11-04
+                          日期 2023-03-05
                          </span>
                     </span>
                     <div class="tags text-center">
@@ -172,8 +172,8 @@
                         <a class="tag" href="/tags/#Java"
                            title="Java">Java</a>
                         
-                        <a class="tag" href="/tags/#Reading Note - Arithmetic"
-                           title="Reading Note - Arithmetic">Reading Note - Arithmetic</a>
+                        <a class="tag" href="/tags/#Reading"
+                           title="Reading">Reading</a>
                         
                         <br/><span id="busuanzi_container_page_pv" style="display:none;">阅读量：
 <span id="busuanzi_value_page_pv"></span>次</span>
@@ -184,7 +184,7 @@
     </div>
     <div class="post-title-haojen">
         <span>
-            合并两个有序链表
+            ThreadLocal2
         </span>
     </div>
 </header>
@@ -195,25 +195,23 @@
         <div class="row">
             <!-- Post Container -->
             <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
-                <h3 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h3><p>new一个aHead 保存头节点<br>定义一个链表c ，在  c = aHead ，此时c和aHead 都指向头节点,且此时 c中存的是 aHead对象地址的引用<br>l1和l2进行比大小，若l1&lt;l2  则c.next 指向l1,反之指向l2<br>当其中l1或l2 任意为空时，c直接指向不为空的</p>
-<p>此时因为c中第一个节点为定义的头节点，则返回aHead.next的结果为两条链表按升序合并的值</p>
-<p>这道题的解放采用了以空间换时间的思路，强调了“对象地址的引用” 反复利用</p>
-<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Definition for singly-linked list.</span></span><br><span class="line"><span class="comment"> * public class ListNode &#123;</span></span><br><span class="line"><span class="comment"> *     int val;</span></span><br><span class="line"><span class="comment"> *     ListNode next;</span></span><br><span class="line"><span class="comment"> *     ListNode() &#123;&#125;</span></span><br><span class="line"><span class="comment"> *     ListNode(int val) &#123; this.val = val; &#125;</span></span><br><span class="line"><span class="comment"> *     ListNode(int val, ListNode next) &#123; this.val = val; this.next = next; &#125;</span></span><br><span class="line"><span class="comment"> * &#125;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> ListNode <span class="title">mergeTwoLists</span><span class="params">(ListNode l1, ListNode l2)</span> </span>&#123;</span><br><span class="line">        ListNode aHead = <span class="keyword">new</span> ListNode(<span class="number">0</span>);</span><br><span class="line">        ListNode c = aHead;</span><br><span class="line">        <span class="keyword">while</span>(l1 !=<span class="keyword">null</span> &amp;&amp; l2 != <span class="keyword">null</span>)&#123;</span><br><span class="line">            <span class="keyword">if</span>(l1.val&lt;l2.val)&#123;</span><br><span class="line">                c.next = l1;</span><br><span class="line">                c = c.next;</span><br><span class="line">                l1 = l1.next;</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                c.next = l2;</span><br><span class="line">                c = c.next;</span><br><span class="line">                l2 = l2.next;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="keyword">if</span>(l1 == <span class="keyword">null</span>)&#123;</span><br><span class="line">        c.next = l2;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        c.next = l1;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> aHead.next;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+                <h2 id="ThreadLocal"><a href="#ThreadLocal" class="headerlink" title="ThreadLocal"></a>ThreadLocal</h2><p>ThreadLocal意为线程本地变量，用于解决多线程并发时访问共享变量的问题。</p>
+<p>所谓的共享变量指的是在堆中的实例、静态属性和数组；对于共享数据的访问受Java的内存模型（JMM）的控制，其模型如下：</p>
+<p><img src="/images/1.png" alt="ThreadLocal"></p>
+<p>每个线程都会有属于自己的本地内存，在堆（也就是上图的主内存）中的变量在被线程使用的时候会被复制一个副本线程的本地内存中，当线程修改了共享变量之后就会通过JMM管理控制写会到主内存中。</p>
+<p>很明显，在多线程的场景下，当有多个线程对共享变量进行修改的时候，就会出现线程安全问题，即数据不一致问题。常用的解决方法是对访问共享变量的代码加锁（synchronized或者Lock）。但是这种方式对性能的耗费比较大。在JDK1.2中引入了ThreadLocal类，来修饰共享变量，使每个线程都单独拥有一份共享变量，这样就可以做到线程之间对于共享变量的隔离问题。</p>
+<p>当然锁和ThreadLocal使用场景还是有区别的，具体区别如下：</p>
+<p><img src="/images/image-20230228103343367.png" alt="image-20230228103343367"></p>
+<h2 id="一、ThreadLocal的使用及原理"><a href="#一、ThreadLocal的使用及原理" class="headerlink" title="一、ThreadLocal的使用及原理"></a>一、ThreadLocal的使用及原理</h2><h3 id="1-1-使用"><a href="#1-1-使用" class="headerlink" title="1.1 使用"></a>1.1 使用</h3>
                 <hr>
                 
 
                 <ul class="pager">
                     
-                    <li class="previous">
-                        <a href="/2021/11/25/JAVA并发/" data-toggle="tooltip" data-placement="top"
-                           title="JAVA并发1">&larr; Previous Post</a>
-                    </li>
-                    
                     
                     <li class="next">
-                        <a href="/2021/11/04/堆栈方法区分别存储着什么？/" data-toggle="tooltip" data-placement="top"
-                           title="堆栈方法区分别存储着什么？">Next Post &rarr;</a>
+                        <a href="/2023/03/05/read/" data-toggle="tooltip" data-placement="top"
+                           title="read">Next Post &rarr;</a>
                     </li>
                     
                 </ul>
@@ -251,7 +249,7 @@
 
             <div class="hidden-xs col-sm-3 toc-col">
                 <div class="toc-wrap">
-                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF"><span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81"><span class="toc-text">代码</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#ThreadLocal"><span class="toc-text">ThreadLocal</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81ThreadLocal%E7%9A%84%E4%BD%BF%E7%94%A8%E5%8F%8A%E5%8E%9F%E7%90%86"><span class="toc-text">一、ThreadLocal的使用及原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E4%BD%BF%E7%94%A8"><span class="toc-text">1.1 使用</span></a></li></ol></li></ol>
                 </div>
             </div>
         </div>
